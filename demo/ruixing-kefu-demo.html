@@ -507,8 +507,8 @@ function addFollow(L,status,text,nextDays){const first=!L.follow.length;L.follow
 
 /* ================= 页面框架 ================= */
 let page='todo',prev=[],view={};
-const NAV={cs:[['todo','今日待办'],['customers','我的客户'],['dispatch','派单工具'],['teachers','老师'],['org','机构课'],['map','地图'],['mine','我的数据']],
-  sup:[['todo','今日待办'],['customers','团队客户'],['dispatch','派单工具'],['teachers','老师'],['org','机构课'],['map','地图'],['team','团队与审批']]};
+const NAV={cs:[['todo','今日待办'],['customers','我的客户'],['deals','成交与退费'],['dispatch','派单工具'],['teachers','老师'],['org','机构课'],['map','地图'],['mine','我的数据']],
+  sup:[['todo','今日待办'],['customers','团队客户'],['deals','成交与退费'],['dispatch','派单工具'],['teachers','老师'],['org','机构课'],['map','地图'],['team','团队与审批']]};
 NAV.cs.push(['keep','保留清单']);NAV.sup.push(['keep','保留清单']);
 function go(p,keep){if(!keep)prev.push(page);page=p;render();window.scrollTo(0,0)}
 function back(){page=prev.pop()||'todo';render();window.scrollTo(0,0)}
@@ -601,7 +601,7 @@ PAGES.customers=()=>{const v=view.cust||(view.cust={cat:'follow',cls:'all',q:'',
   const mon=TODAY.slice(0,7);const st=stats(scopeIds(),'m');
   const wxs=[...new Set(scopeIds().flatMap(u=>USERS[u].wecoms))];
   return `<div class="ph"><div><div class="eyebrow">客户经营 · 跟进、成交和所有客户使用同一客户 ID 与完整跟进记录</div><h1>${isSup()?'团队客户':'我的客户'}</h1></div><div class="btns"><button class="btn" data-act="changes" type="button">客户修改与作废记录</button><button class="btn" data-act="bulk" type="button">批量导入（CSV/Excel）</button><button class="btn primary" data-act="newLead" type="button">+ 录入线索</button></div></div>
-  ${merged('<b>我的线索</b>（分类卡、A/B/C 分级、资料完整度、全部客户查询、所属工作微信筛选）、<b>学生档案</b>（放进客户详情，一个家长多个孩子）、<b>客户位置补解析</b>（“定位失败客户”分类 + 每行“完善定位”）、<b>成交与退费</b>（在客户详情里录入和办理）。')}
+  ${merged('<b>我的线索</b>（分类卡、A/B/C 分级、资料完整度、全部客户查询、所属工作微信筛选）、<b>学生档案</b>（放进客户详情，一个家长多个孩子）、<b>客户位置补解析</b>（“定位失败客户”分类 + 每行“完善定位”）。成交与退费在详情里也能直接办，另有单独的“成交与退费”页。')}
   <section class="card"><div class="cardhead"><h2>客户信息完整度</h2><span class="muted">来源渠道 + 联系方式 + 年级 + 科目 + 上课地址（定位成功）+ 客户所属微信</span></div>
     <div class="kpis"><div class="kpi"><span class="l">完善率（不含库存待激活）</span><span class="v">${pct(full,live.length)}</span></div><div class="kpi"><span class="l">总数</span><span class="v">${live.length}</span></div><div class="kpi"><span class="l">已完善</span><span class="v">${full}</span></div><div class="kpi"><span class="l">待完善</span><span class="v" style="color:var(--warn)">${live.length-full}</span></div></div>
     <p class="hint">现系统把 6 千多条库存客户也算进分母，完善率只有 5%，看了也没法行动。这里只算已激活的客户。</p></section>
@@ -793,11 +793,11 @@ PAGES.org=()=>{const leads=new Set(myLeads().map(L=>L.id));const list=S.orgs.fil
   const todayL=[];list.forEach(G=>G.lessons.forEach(x=>{if(x.date===TODAY)todayL.push({G,x})}));
   const pend=list.flatMap(G=>G.receipts.filter(r=>r.status==='待确认').map(r=>({G,r})));const renew=list.filter(g=>orgLeft(g)<=2);
   return `<div class="ph"><div><div class="eyebrow">开发中 · 成交单的“订单类别”多一个“机构课”</div><h1>机构课</h1></div></div>
-  <p class="note">对应开发中的<b>机构订单</b>（ruixing-org-dev，做到第 2a 批）。和自营的信息费单不同：按课次收费、要消课、有老师结算和续费。录入成交时选“机构课”生成课表。</p>
+  <p class="note">对应开发中的<b>机构订单</b>（ruixing-org-dev，做到第 2a 批）。和自营的信息费单不同：按课次收费、要消课、有老师结算、续费和<b>按课次退费</b>。录入成交时选“机构课”生成课表；退费在每一行的“课表 / 退费”里办。</p>
   ${unsure('机构课的界面我没看到截图，字段来自 Codex 的交接（课次、消课结果、公司收/老师代收、按次/按周/按月结算）。')}
   <div class="kpis"><div class="kpi"><span class="l">进行中</span><span class="v">${list.length}</span></div><div class="kpi"><span class="l">今天的课</span><span class="v">${todayL.length}</span></div><div class="kpi"><span class="l">老师代收待确认</span><span class="v">${pend.length}</span><span class="s">${yuan(sum(pend,x=>x.r.amount))}</span></div><div class="kpi"><span class="l">快上完要续费</span><span class="v">${renew.length}</span><span class="s">剩 2 次以内</span></div></div>
   <section class="card"><h2>今天要处理</h2>${todayL.length||pend.length||renew.length?`<div>${todayL.map(({G,x})=>{const L=LBY(G.leadId);return `<div class="row"><div class="rmain"><div class="rtitle">${h(kid0(L).name)} · 今天 ${h(G.time.split(' ')[1])}</div><div class="rsub">${h(TBY(G.teacherId).name)} · 第 ${G.lessons.indexOf(x)+1}/${G.total} 次</div></div><div class="ract">${x.result==='pending'?`<button class="btn sm primary" data-act="lesson" data-gid="${G.id}" data-lid="${x.id}" type="button">消课</button>`:chip('已处理','green')}</div></div>`}).join('')}${pend.map(({G,r})=>`<div class="row"><div class="rmain"><div class="rtitle">${h(kid0(LBY(G.leadId)).name)} · 老师代收 ${yuan(r.amount)}</div><div class="rsub">${h(r.note)}</div></div><div class="ract"><button class="btn sm primary" data-act="receipt" data-gid="${G.id}" type="button">确认到账</button></div></div>`).join('')}${renew.map(G=>`<div class="row"><div class="rmain"><div class="rtitle">${h(kid0(LBY(G.leadId)).name)} · 只剩 ${orgLeft(G)} 次</div></div><div class="ract"><button class="btn sm" data-act="renew" data-gid="${G.id}" type="button">登记续费</button></div></div>`).join('')}</div>`:empty('没有')}</section>
-  <section class="card"><h2>全部机构课</h2>${list.length?`<div class="tw"><table class="t"><thead><tr><th>学生</th><th>老师</th><th>上课时间</th><th>进度</th><th class="n">每次收费</th><th class="n">老师每次</th><th>收款</th><th>结算</th></tr></thead><tbody>${list.map(G=>{const L=LBY(G.leadId);return `<tr class="click" data-act="orgDetail" data-gid="${G.id}"><td>${h(kid0(L).name)}<div class="sub">${h(L.parent)}</div></td><td>${h(TBY(G.teacherId).name)}</td><td>${h(G.time)}</td><td><div class="prog"><i style="width:${orgUsed(G)/G.total*100}%"></i></div><div class="sub">${orgUsed(G)} / ${G.total} 次</div></td><td class="n">${yuan(G.price)}</td><td class="n">${yuan(G.teacherPay)}</td><td>${G.pay==='company'?'公司收':'老师代收'}</td><td>${{weekly:'按周',monthly:'按月',per_lesson:'每次课'}[G.settle]}</td></tr>`}).join('')}</tbody></table></div>`:empty('还没有机构课')}</section>`};
+  <section class="card"><h2>全部机构课</h2>${list.length?`<div class="tw"><table class="t"><thead><tr><th>学生</th><th>老师</th><th>上课时间</th><th>进度</th><th class="n">每次收费</th><th class="n">老师每次</th><th>收款</th><th>结算</th><th>退费</th><th></th></tr></thead><tbody>${list.map(G=>{const L=LBY(G.leadId);const rf=G.refunds||[];return `<tr><td>${h(kid0(L).name)}<div class="sub">${h(L.parent)}</div></td><td>${h(TBY(G.teacherId).name)}</td><td>${h(G.time)}</td><td><div class="prog"><i style="width:${orgUsed(G)/G.total*100}%"></i></div><div class="sub">${orgUsed(G)} / ${G.total} 次</div></td><td class="n">${yuan(G.price)}</td><td class="n">${yuan(G.teacherPay)}</td><td>${G.pay==='company'?'公司收':'老师代收'}</td><td>${{weekly:'按周',monthly:'按月',per_lesson:'每次课'}[G.settle]}</td><td>${rf.length?chip('退 '+sum(rf,r=>r.lessons)+' 次 '+yuan(sum(rf,r=>r.amount)),'red'):'—'}</td><td><button class="btn sm" data-act="orgDetail" data-gid="${G.id}" type="button">课表 / 退费</button></td></tr>`}).join('')}</tbody></table></div>`:empty('还没有机构课')}</section>`};
 
 /* ================= 地图 ================= */
 PAGES.map=()=>{const v=view.map||(view.map={city:myCities()[0],ct:true,cd:true,co:true,tf:true,tj:true,to:true,sel:null});
@@ -832,21 +832,19 @@ function stats(uids,range){const mon=TODAY.slice(0,7);const inR=s=>range==='y'?s
   const rf=S.deals.filter(d=>!d.voided&&uids.includes(d.by)&&d.refund&&inR(d.refund.date));const rfa=sum(rf,d=>d.refund.amount);
   const disp=S.orders.flatMap(o=>o.records).filter(r=>uids.includes(r.by)&&inR(r.at)).length;
   return{nw:nw.length,ontime,withF:withF.length,trans,deals:ds.length,fee,rf:rf.length,rfa,disp,ds,rfl:rf}}
-function progress(uids){const doneToday=S.done.filter(d=>uids.includes(d.by)).length;
+function progress(uids){const F=(()=>{const keep=role;return followTasks()})();const doneToday=S.done.filter(d=>uids.includes(d.by)).length;
   const leads=S.leads.filter(L=>uids.includes(L.owner)&&isLive(L)&&OPEN.includes(L.status)&&!L.voided);const due=leads.filter(L=>L.nextDue&&L.nextDue<=TODAY).length;const over=leads.filter(L=>L.nextDue&&L.nextDue<TODAY).length;
   return{should:due+doneToday,done:doneToday,left:due,over}}
 PAGES.mine=()=>{const v=view.mine||(view.mine={range:'m',tab:'deal',q:''});const st=stats([me().id],v.range);const pg=progress([me().id]);
   let rows=v.tab==='deal'?st.ds:st.rfl;if(v.q){const q=v.q.trim();rows=rows.filter(D=>{const L=LBY(D.leadId);return [D.no,L.parent,L.phone,TBY(D.teacherId).name].some(s=>s.includes(q))})}
   const pendV=S.voids.filter(x=>x.by===me().id&&x.status==='待审批').length;
-  return `<div class="ph"><div><div class="eyebrow">经营复盘 · 系统根据你的操作自动算，不用写日报</div><h1>我的数据</h1></div><div class="btns"><button class="btn" data-act="voids" type="button">成交退费作废与历史${pendV?` (${pendV})`:''}</button></div></div>
-  ${merged('<b>我的业绩</b>（昨日业绩/实时业绩、人员卡片、今日工作进度）、<b>成交与退费</b>的统计和订单查询（成交记录/已退费记录）、<b>成交退费作废/历史</b>（待审批、审批历史、已作废记录）。<b>我的日报</b>取消：每个动作都记了谁、什么时候，数字直接算。')}
+  return `<div class="ph"><div><div class="eyebrow">经营复盘 · 系统根据你的操作自动算，不用写日报</div><h1>我的数据</h1></div></div>
+  ${merged('<b>我的业绩</b>（昨日业绩/实时业绩、人员卡片、今日工作进度）。<b>我的日报</b>取消：每个动作都记了谁、什么时候，数字直接算。')}
   <div class="fchips"><span class="lab">统一业绩范围</span><button type="button" data-mrange="y" aria-pressed="${v.range==='y'}">昨日业绩</button><button type="button" data-mrange="m" aria-pressed="${v.range==='m'}">实时业绩（本月累计，含今日）</button></div>
   <div class="kpis"><div class="kpi"><span class="l">新增客户</span><span class="v">${st.nw}</span><span class="s">真实有效新增（含激活的库存）</span></div><div class="kpi"><span class="l">12 小时内首次跟进</span><span class="v">${pct(st.ontime,st.withF)}</span><span class="s">${st.ontime} / ${st.withF}</span></div><div class="kpi"><span class="l">转单</span><span class="v">${st.trans}</span><span class="s">本期转单的客户</span></div><div class="kpi"><span class="l">成交</span><span class="v">${st.deals}</span><span class="s">真实订单 · 出单率 ${pct(st.deals,st.nw)}</span></div><div class="kpi"><span class="l">营收</span><span class="v">${yuan(st.fee)}</span></div><div class="kpi"><span class="l">退单 / 退费</span><span class="v">${st.rf} 单</span><span class="s">${yuan(st.rfa)} · 按实际退费日</span></div><div class="kpi"><span class="l">实际营收</span><span class="v">${yuan(st.fee-st.rfa)}</span><span class="s">成交营收 − 本期退费</span></div><div class="kpi"><span class="l">派单联系老师</span><span class="v">${st.disp}</span><span class="s">次</span></div></div>
   <section class="card"><div class="cardhead"><h2>今日工作进度</h2><span class="muted">独立统计，不随上面的范围变</span></div><div class="dist3"><div><b>${pg.should}</b><span>应完成</span></div><div><b>${pg.done}</b><span>已完成</span></div><div><b>${pg.left}</b><span>未完成</span></div><div><b style="color:var(--bad)">${pg.over}</b><span>其中逾期</span></div></div></section>
   ${unsure('“转单”在现系统有两个数：我的业绩写 117、派单看板写 7。新版只留一种：<b>本期内被标成“转单”的客户数</b>。这个口径要你确认。')}
-  <section class="card"><div class="cardhead"><h2>查询成交 / 退费订单</h2></div><div class="filters"><div class="fld" style="flex:1"><label for="mq">搜索</label><input id="mq" type="search" placeholder="输入订单号、家长姓名、电话或老师姓名" value="${h(v.q)}"></div></div>
-    <div class="tabs" role="tablist"><button class="tab" role="tab" type="button" data-mtab="deal" aria-selected="${v.tab==='deal'}">成交记录<span class="c">${st.ds.length}</span></button><button class="tab" role="tab" type="button" data-mtab="refund" aria-selected="${v.tab==='refund'}">已退费记录<span class="c">${st.rfl.length}</span></button></div>
-    ${rows.length?`<div class="tw"><table class="t"><thead><tr><th>${v.tab==='deal'?'成交时间':'退费日期'} / 订单号</th><th>家长 / 学生</th><th>城市 / 需求</th><th>老师</th><th class="n">${v.tab==='deal'?'信息费':'退费'}</th><th>客服 / 派单</th><th>现有状态</th><th>操作</th></tr></thead><tbody>${rows.map(D=>{const L=LBY(D.leadId);const k=L.kids.find(x=>x.id===D.kidId)||kid0(L);const pv=S.voids.find(x=>x.dealId===D.id&&x.status==='待审批');return `<tr><td>${v.tab==='deal'?D.at.slice(0,16):D.refund.date}<div class="sub"><b>${h(D.no)}</b></div></td><td><button class="link" data-open="${L.id}" type="button">${h(L.parent)}</button><div class="sub">学生：${h(k.name)}</div></td><td class="wrap">${h(L.city)} · ${h(k.grade)} · ${h(L.subject)}<div class="sub">${h(L.district)}</div></td><td>${h(TBY(D.teacherId).name)}<div class="sub">${h(TBY(D.teacherId).wechat)}</div></td><td class="n">${v.tab==='deal'?(D.kind==='org'?'机构课':yuan(D.fee)+'<div class="sub">每周 '+D.weekly+' 次</div>'):yuan(D.refund.amount)}</td><td>${owner(D.by)}<div class="sub">派单：${owner(D.dispatcher)}</div></td><td>${D.refund?chip('成交已退费','red'):chip('成交未退费','green')}<div class="sub">${D.kind==='org'?'机构课':'自营'}</div></td><td>${pv?chip('作废待审批','orange'):`<button class="btn sm danger" data-act="voidDeal" data-did="${D.id}" type="button">申请作废</button>`}</td></tr>`}).join('')}</tbody></table></div>`:empty('没有记录')}</section>`};
+  <p class="note">成交记录、已退费记录、订单查询在 <button class="link" data-nav="deals" type="button">成交与退费</button> 页。</p>`};
 
 /* ================= 团队与审批（主管） ================= */
 PAGES.team=()=>{const v=view.team||(view.team={range:'m'});const pend=S.voids.filter(x=>x.status==='待审批');
@@ -857,6 +855,42 @@ PAGES.team=()=>{const v=view.team||(view.team={range:'m'});const pend=S.voids.fi
   <section class="card"><div class="cardhead"><h2>团队</h2><span class="muted">点一行看这个人的客户</span></div><div class="tw"><table class="t"><thead><tr><th>人员</th><th>城市</th><th class="n">新增客户</th><th class="n">12小时跟进率</th><th class="n">转单</th><th class="n">成交</th><th class="n">营收</th><th class="n">退款</th><th class="n">实际营收</th><th>今日工作进度</th><th class="n">老客户回访待办</th><th>派单微信</th></tr></thead><tbody>
   ${TEAM.map(u=>{const s=stats([u],v.range);const p=progress([u]);const vis=S.deals.filter(d=>!d.voided&&LBY(d.leadId).owner===u).flatMap(d=>d.visits).filter(x=>!x.done&&!x.cancelled&&x.due<=TODAY).length;
     return `<tr class="click" data-teamown="${u}"><td>${owner(u)}<div class="sub">${USERS[u].role}</div></td><td>${USERS[u].cities.join('、')}</td><td class="n">${s.nw}</td><td class="n">${pct(s.ontime,s.withF)}</td><td class="n">${s.trans}</td><td class="n">${s.deals}</td><td class="n">${yuan(s.fee)}</td><td class="n">${yuan(s.rfa)}</td><td class="n"><b>${yuan(s.fee-s.rfa)}</b></td><td>${chip('应 '+p.should,'blue')}<div class="sub">完 ${p.done} · 未 ${p.left} · 逾 ${p.over}</div></td><td class="n">${vis}</td><td>${USERS[u].dispatch?chip('已配置','green'):chip('未配置','red')}</td></tr>`}).join('')}</tbody></table></div></section>`};
+
+/* ================= 成交与退费 ================= */
+PAGES.deals=()=>{const v=view.deals||(view.deals={tab:'deal',q:'',st:'',kind:''});const mon=TODAY.slice(0,7);const uids=scopeIds();
+  const st=stats(uids,'m');const leads=S.leads.filter(L=>uids.includes(L.owner)&&!L.voided);
+  const nw=leads.filter(L=>isLive(L)&&L.created.startsWith(mon));const nwTrans=nw.filter(L=>L.transferAt&&L.transferAt.startsWith(mon));
+  const nwDeals=st.ds.filter(D=>nw.some(L=>L.id===D.leadId));const nwQuickRefund=nwDeals.filter(D=>D.refund&&D.refund.date.startsWith(mon));
+  const orgR=S.orgs.filter(G=>uids.includes(LBY(G.leadId).owner)).flatMap(G=>(G.refunds||[]).map(r=>({G,r})));
+  let rows;if(v.tab==='deal'){rows=S.deals.filter(D=>!D.voided&&uids.includes(D.by)&&D.at.startsWith(mon))}else{rows=S.deals.filter(D=>!D.voided&&uids.includes(D.by)&&D.refund&&D.refund.date.startsWith(mon))}
+  if(v.st)rows=rows.filter(D=>(D.refund?'成交已退费':'成交未退费')===v.st);if(v.kind)rows=rows.filter(D=>D.kind===v.kind);
+  if(v.q){const q=v.q.trim();rows=S.deals.filter(D=>!D.voided&&uids.includes(D.by)).filter(D=>{const L=LBY(D.leadId);return [D.no,L.parent,L.phone,L.wechat,...L.kids.map(k=>k.name),TBY(D.teacherId).name].some(s=>s.includes(q))})}
+  rows.sort((a,b)=>(v.tab==='deal'?a.at<b.at:a.refund.date<b.refund.date)?1:-1);
+  const pendV=S.voids.filter(x=>uids.includes(x.by)&&x.status==='待审批').length;
+  return `<div class="ph"><div><div class="eyebrow">客户经营 · ${mon}-01 至 ${mon}-31：成交按成交时间统计，退费按退费发生时间统计</div><h1>成交与退费</h1></div><div class="btns"><button class="btn" data-act="pickRefund" type="button">办理退费</button><button class="btn primary" data-act="pickDeal" type="button">+ 录入成交</button><button class="btn" data-act="voids" type="button">作废与历史${pendV?` (${pendV})`:''}</button><button class="btn" data-nav="dispatch" type="button">进入派单工具</button></div></div>
+  ${merged('<b>成交与退费</b>整页保留：月营收、月退费、月实收、月成单、月发生退单、月出单率；客户与成交统计 8 个数；查询成交/退费订单；成交记录 / 已退费记录；订单现有状态、订单类别筛选。<b>成交退费作废/历史</b>的入口也放在这里。机构课的退费单独列在下面。')}
+  <div class="kpis"><div class="kpi"><span class="l">月营收</span><span class="v">${yuan(st.fee)}</span></div><div class="kpi"><span class="l">月退费</span><span class="v">${yuan(st.rfa)}</span></div><div class="kpi"><span class="l">月实收</span><span class="v">${yuan(st.fee-st.rfa)}</span></div><div class="kpi"><span class="l">月成单</span><span class="v">${st.deals}</span></div><div class="kpi"><span class="l">月发生退单</span><span class="v">${st.rf}</span></div><div class="kpi"><span class="l">月出单率</span><span class="v">${pct(st.deals,st.nw)}</span><span class="s">成单 ÷ 新增</span></div></div>
+  <section class="card"><div class="cardhead"><h2>客户与成交统计</h2><span class="muted">${mon} · 未成交数为当前状态</span></div>
+    <div class="kpis">${[['新增客户',nw.length+' 位','所选期间'],['新增客户转单量',nwTrans.length+' 位','所选期间'],['合计转单量',st.trans+' 位','所选期间'],['合计成交单数',st.deals+' 单','所选期间'],['新增客成交单数',nwDeals.length+' 单','所选期间'],['新增当期即退单数',nwQuickRefund.length+' 单','所选期间'],['新增客户当前转单未成交数',nw.filter(L=>L.status==='转单').length+' 位','新增客户当前未成交'],['当前合计转单未成交数',leads.filter(L=>L.status==='转单').length+' 位','截至当前 · 实时']].map(([l,n,s])=>`<div class="kpi"><span class="l">${l}</span><span class="v">${n}</span><span class="s">${s}</span></div>`).join('')}</div></section>
+  <section class="card"><div class="cardhead"><h2>查询成交 / 退费订单</h2></div><div class="filters"><div class="fld" style="flex:1"><label for="dq">搜索（不受日期限制）</label><input id="dq" type="search" placeholder="输入订单号、家长姓名、电话、微信、学生或老师姓名" value="${h(v.q)}"></div></div>
+    <div class="tabs" role="tablist"><button class="tab" role="tab" type="button" data-dltab="deal" aria-selected="${v.tab==='deal'}">成交记录</button><button class="tab" role="tab" type="button" data-dltab="refund" aria-selected="${v.tab==='refund'}">已退费记录</button></div>
+    <div class="filters"><div class="fld"><label for="dst">订单现有状态</label><select id="dst"><option value="">全部状态</option>${['成交未退费','成交已退费'].map(x=>`<option ${v.st===x?'selected':''}>${x}</option>`).join('')}</select></div><div class="fld"><label for="dkind">订单类别</label><select id="dkind"><option value="">全部</option><option value="self" ${v.kind==='self'?'selected':''}>自营</option><option value="org" ${v.kind==='org'?'selected':''}>机构课</option></select></div></div>
+    ${rows.length?`<div class="tw"><table class="t"><thead><tr><th>${v.tab==='deal'?'成交时间':'退费日期'} / 订单号</th><th>家长 / 学生</th><th>就读学校</th><th>城市 / 需求</th><th>老师</th><th class="n">${v.tab==='deal'?'信息费':'退费'}</th><th>客服 / 派单</th><th>现有状态</th><th>操作</th></tr></thead><tbody>${rows.map(D=>{const L=LBY(D.leadId);const k=L.kids.find(x=>x.id===D.kidId)||kid0(L);const pv=S.voids.find(x=>x.dealId===D.id&&x.status==='待审批');const G=S.orgs.find(g=>g.dealId===D.id);
+      return `<tr><td>${v.tab==='deal'||!D.refund?D.at.slice(0,16):D.refund.date}<div class="sub"><b>${h(D.no)}</b></div></td><td><button class="link" data-open="${L.id}" type="button">${h(L.parent)}</button><div class="sub">${h(L.wechat)}</div><div class="sub">学生：${h(k.name)}</div></td><td>${k.school?h(k.school):'—'}</td><td class="wrap">${h(L.city)} · ${h(k.grade)} · ${h(L.subject)}<div class="sub">${h(L.district)}</div></td><td>${h(TBY(D.teacherId).name)}<div class="sub">${h(TBY(D.teacherId).wechat)}</div></td>
+      <td class="n">${D.kind==='org'?(G?yuan(G.price)+'/次<div class="sub">'+G.total+' 次课</div>':'机构课'):v.tab==='refund'&&D.refund?yuan(D.refund.amount)+'<div class="sub">'+h(D.refund.side)+' · '+h(D.refund.reason)+'</div>':yuan(D.fee)+'<div class="sub">每周 '+D.weekly+' 次</div>'}</td><td>${owner(D.by)}<div class="sub">派单：${owner(D.dispatcher)}</div></td><td>${D.refund?chip('成交已退费','red'):chip('成交未退费','green')}<div class="sub">${D.kind==='org'?'机构课':'自营'}</div></td>
+      <td><div class="acts"><button class="btn sm" data-open="${L.id}" type="button">查看订单</button>${D.kind==='self'&&!D.refund?`<button class="btn sm" data-act="refund" data-did="${D.id}" type="button">办理退费</button>`:''}${D.kind==='org'&&G?`<button class="btn sm" data-act="orgDetail" data-gid="${G.id}" type="button">课表 / 退费</button>`:''}${pv?chip('作废待审批','orange'):`<button class="btn sm danger" data-act="voidDeal" data-did="${D.id}" type="button">申请作废</button>`}</div></td></tr>`}).join('')}</tbody></table></div>`:empty('没有记录')}</section>
+  <section class="card"><div class="cardhead"><h2>机构课退费</h2><span class="muted">${orgR.length} 笔 · 按没上的课次退</span></div>${orgR.length?`<div class="tw"><table class="t"><thead><tr><th>退费日期</th><th>学生</th><th>老师</th><th class="n">退课次</th><th class="n">退费</th><th>原因</th><th>经办</th></tr></thead><tbody>${orgR.map(({G,r})=>{const L=LBY(G.leadId);return `<tr><td>${r.date}</td><td>${h(kid0(L).name)}<div class="sub">${h(L.parent)}</div></td><td>${h(TBY(G.teacherId).name)}</td><td class="n">${r.lessons}</td><td class="n">${yuan(r.amount)}</td><td>${h(r.reason)}</td><td>${owner(r.by)}</td></tr>`}).join('')}</tbody></table></div>`:empty('还没有机构课退费。在机构课的“课表 / 退费”里办理。')}</section>`};
+function pickDealModal(){const ls=myLeads().filter(L=>isLive(L)&&(OPEN.includes(L.status)||L.status==='已成交'));
+  openModal(`<form class="form"><h2>录入成交 · 先选客户</h2><div class="fld"><label for="pk">客户</label><select id="pk" name="k">${ls.map(L=>`<option value="${L.id}">${h(L.parent)} · ${h(kid0(L).grade)}${h(L.subject)} · ${h(L.status)}</option>`).join('')}</select></div><p class="hint">已成交的老客户可以再录一单（续单、换老师、第二个孩子）。</p><p class="err" hidden></p>${foot('下一步')}</form>`,f=>{const L=LBY(fv(f,'k'));setTimeout(()=>dealModal(L),0)})}
+function pickRefundModal(){const ds=S.deals.filter(D=>!D.voided&&!D.refund&&D.kind==='self'&&scopeIds().includes(D.by)).sort((a,b)=>a.at<b.at?1:-1);
+  openModal(`<form class="form"><h2>办理退费 · 先选成交单</h2><div class="fld"><label for="pr">成交单</label><select id="pr" name="d">${ds.map(D=>`<option value="${D.id}">${h(D.no)} · ${h(LBY(D.leadId).parent)} · ${yuan(D.fee)}</option>`).join('')}</select></div><p class="hint">机构课的退费在机构课的“课表 / 退费”里办理，按没上的课次退。</p><p class="err" hidden></p>${foot('下一步')}</form>`,f=>{const D=DBY(fv(f,'d'));setTimeout(()=>refundModal(D),0)})}
+function orgRefundModal(G){const L=LBY(G.leadId);const left=orgLeft(G);openModal(`<form class="form"><h2>机构课退费 · ${h(kid0(L).name)}</h2><p class="hint">已上 ${orgUsed(G)} / ${G.total} 次，还剩 ${left} 次，每次 ${yuan(G.price)}。${G.pay==='teacher'?'这单是老师代收，退费要先和老师对账。':''}</p>
+  <div class="two"><div class="fld"><label for="or-n">退几次课</label><input id="or-n" name="n" type="number" value="${left}"></div><div class="fld"><label for="or-a">退多少钱（元）</label><input id="or-a" name="a" type="number" value="${left*G.price}"></div></div>
+  <div class="two"><div class="fld"><label for="or-d">退费日期</label><input id="or-d" name="d" type="date" value="${TODAY}"></div><div class="fld"><label for="or-r">原因</label><select id="or-r" name="r">${REFUND_REASONS.map(r=>`<option>${r}</option>`).join('')}</select></div></div>
+  ${unsure('机构课退费的规则（按课次退、是否扣手续费、老师代收怎么退）我没看到，这里先按“没上的课次 × 单价”算，可以手改。')}<p class="err" hidden></p>${foot('确认退费')}</form>`,f=>{
+  const n=+fv(f,'n'),a=+fv(f,'a'),d=fv(f,'d');if(!(n>0)||n%1||n>left)return errOn(f,'退课次要在 1 到 '+left+' 之间');if(!(a>0)||a>n*G.price)return errOn(f,'退费金额要大于 0，且不超过 '+yuan(n*G.price));if(!d||d>TODAY)return errOn(f,'退费日期不能晚于今天');
+  G.refunds=G.refunds||[];G.refunds.push({lessons:n,amount:a,date:d,reason:fv(f,'r'),by:me().id,at:now()});let k=n;for(let i=G.lessons.length-1;i>=0&&k>0;i--){if(G.lessons[i].result==='pending'){G.lessons.splice(i,1);k--}}G.total-=n;if(orgLeft(G)<=0)G.status='已结束';
+  const D=DBY(G.dealId);if(!D.visits.some(x=>x.type==='refund'))D.visits.push({k:'退费',type:'refund',due:addD(d,3),done:false,cancelled:false});log('机构课退费',L.id,kid0(L).name+' 退 '+n+' 次 '+yuan(a));toast('已退 '+n+' 次课，生成退费回访')})}
 
 /* ================= 保留清单 ================= */
 const KEEP=[
@@ -885,11 +919,12 @@ const KEEP=[
   ['纠正录入、作废误录、客户修改与作废记录','我的客户列表和顶部按钮','customers'],
   ['库存待激活 / 激活','我的客户 → 库存待激活','customers'],
   ['学生档案（一个家长多个孩子、当前年级推算、学业状态、学校）','客户详情 → 孩子','customers'],
-  ['成交单（订单号、自营/机构课、客服/派单两个人）','客户详情 → 成交单；我的数据 → 成交记录','mine'],
-  ['办理退费（金额、日期校验、责任方）','客户详情 → 办理退费','customers'],
-  ['成交退费作废与历史（待审批、审批历史、已作废）','我的数据 → 作废与历史；主管在“团队与审批”批','mine'],
+  ['成交与退费页（月营收/退费/实收/成单/退单/出单率、客户与成交统计 8 个数、订单查询、成交记录/已退费记录、订单状态和类别筛选）','菜单“成交与退费”','deals'],
+  ['成交单（订单号、自营/机构课、客服/派单两个人）','客户详情 → 成交单；成交与退费 → 成交记录','deals'],
+  ['办理退费（金额、日期校验、责任方）','成交与退费 → 办理退费；客户详情 → 办理退费','deals'],
+  ['机构课退费（按没上的课次退）','机构课 → 课表 / 退费；成交与退费 → 机构课退费','org'],
+  ['成交退费作废与历史（待审批、审批历史、已作废）','成交与退费 → 作废与历史；主管在“团队与审批”批','deals'],
   ['我的业绩（昨日/实时、今日工作进度）','我的数据','mine'],
-  ['成交与退费的月统计和订单查询','我的数据（营收、退费、实收、成单、退单、出单率；成交记录/已退费记录）','mine'],
   ['派单工作看板（2 天内/2–7 天/7 天以上未成交）','派单工具','dispatch'],
   ['老师资源库（全部/已成交/我录入的，资料状态、位置状态）','老师 → 老师资源库','teachers'],
   ['老师录入（新增、批量导入、最低资料录入）','老师 → 录入老师','teachers'],
@@ -977,7 +1012,8 @@ function orgModal(G){const L=LBY(G.leadId);const R2={pending:['待上',''],compl
   <div class="kpis"><div class="kpi"><span class="l">已上</span><span class="v">${orgUsed(G)} / ${G.total}</span></div><div class="kpi"><span class="l">每次收家长</span><span class="v">${yuan(G.price)}</span><span class="s">给老师 ${yuan(G.teacherPay)}</span></div><div class="kpi"><span class="l">已上的毛利</span><span class="v">${yuan(orgUsed(G)*(G.price-G.teacherPay))}</span></div></div>
   <h3>收款</h3>${G.receipts.length?`<div>${G.receipts.map(r=>`<div class="row"><div class="rmain"><div class="rtitle">${yuan(r.amount)} ${chip(r.status,r.status==='已到账'?'green':'orange')}</div><div class="rsub">${mdl(r.date)} · ${h(r.note)}</div></div></div>`).join('')}</div>`:empty('还没有收款记录')}
   <h3>课表</h3><div class="tw"><table class="t"><thead><tr><th>次</th><th>日期</th><th>状态</th><th>操作人</th><th></th></tr></thead><tbody>${G.lessons.map((x,i)=>`<tr><td>${i+1}</td><td>${mdl(x.date)} ${wk(x.date)}</td><td>${chip(R2[x.result][0],R2[x.result][1])}</td><td class="sub">${x.by?owner(x.by):''}</td><td>${x.result==='pending'&&x.date<=TODAY?`<button class="btn sm primary" data-act="lesson" data-gid="${G.id}" data-lid="${x.id}" type="button">消课</button>`:''}</td></tr>`).join('')}</tbody></table></div>
-  <div class="foot"><button class="btn" data-act="renew" data-gid="${G.id}" type="button">登记续费</button><button class="btn primary" data-act="close" type="button">关闭</button></div>`,null,true)}
+  ${(G.refunds||[]).length?`<h3>退费</h3><div>${G.refunds.map(r=>`<div class="row"><div class="rmain"><div class="rtitle">退 ${r.lessons} 次 · ${yuan(r.amount)} ${chip('已退费','red')}</div><div class="rsub">${r.date} · ${h(r.reason)} · ${owner(r.by)}</div></div></div>`).join('')}</div>`:''}
+  <div class="foot">${orgLeft(G)>0?`<button class="btn danger" data-act="orgRefund" data-gid="${G.id}" type="button">办理退费</button><button class="btn" data-act="renew" data-gid="${G.id}" type="button">登记续费</button>`:''}<button class="btn primary" data-act="close" type="button">关闭</button></div>`,null,true)}
 function leadModal(){openModal(`<form class="form"><h2>录入线索</h2><div class="two"><div class="fld"><label for="n-p">家长称呼</label><input id="n-p" name="p" type="text" placeholder="例如：陈女士"></div><div class="fld"><label for="n-ph">手机</label><input id="n-ph" name="ph" type="tel"></div></div>
   <div class="two"><div class="fld"><label for="n-g">年级</label><select id="n-g" name="g">${GRADES.map(g=>`<option ${g==='初二'?'selected':''}>${g}</option>`).join('')}</select></div><div class="fld"><label for="n-s">科目</label><select id="n-s" name="s">${SUBJ.map(s=>`<option>${s}</option>`).join('')}</select></div></div>
   <div class="two"><div class="fld"><label for="n-c">城市</label><select id="n-c" name="c">${myCities().map(c=>`<option>${c}</option>`).join('')}</select></div><div class="fld"><label for="n-src">来源渠道</label><select id="n-src" name="src">${SOURCES.map(s=>`<option>${s}</option>`).join('')}</select></div></div>
@@ -1029,7 +1065,8 @@ const ACT={
   receipt(el){const G=GBY(el.dataset.gid);G.receipts.forEach(r=>{if(r.status==='待确认')r.status='已到账'});log('到账',G.leadId,'确认老师代收的钱已到账');render();toast('已确认到账')},
   renew(el){renewModal(GBY(el.dataset.gid))},
   orgDetail(el){orgModal(GBY(el.dataset.gid))},
-  newLead:leadModal,changes:changesModal,voids:voidsModal,
+  newLead:leadModal,changes:changesModal,voids:voidsModal,pickDeal:pickDealModal,pickRefund:pickRefundModal,
+  orgRefund(el){orgRefundModal(GBY(el.dataset.gid))},
   bulk(){toast('批量导入（CSV/Excel）保留现有功能，演示里不做')},
   correct(el){correctModal(LBY(el.dataset.id))},voidLead(el){voidLeadModal(LBY(el.dataset.id))},voidDeal(el){voidDealModal(DBY(el.dataset.did))},
   addKid(el){addKidModal(LBY(el.dataset.id))},school(el){schoolModal(LBY(el.dataset.id))},
@@ -1063,7 +1100,7 @@ document.addEventListener('click',e=>{
   const t=e.target.closest('[data-topen]');if(t){closeModal();go('teacher:'+t.dataset.topen);return}
   const ds=e.target.closest('[data-dsub]');if(ds){readDispatchForm();const p=view.d.p;const s=ds.dataset.dsub;p.subjects=p.subjects.includes(s)?p.subjects.filter(x=>x!==s):[...p.subjects,s];render();return}
   const vt=e.target.closest('[data-vtab]');if(vt){view.vtab=vt.dataset.vtab;voidsModal();return}
-  const map={tf:['todo','f'],ttab2:['todo','tab'],vb:['todo','vb'],vr:['todo','vr'],vdeal:['todo','vdeal'],care:['todo','care'],ccat:['cust','cat'],ccls:['cust','cls'],ttab:['t','tab'],tcat:['t','cat'],rtab:['t','rtab'],rprof:['t','prof'],rgeo:['t','geo'],dbk:['d','bucket'],mrange:['mine','range'],mtab:['mine','tab'],trange:['team','range'],mcity:['map','city']};
+  const map={tf:['todo','f'],ttab2:['todo','tab'],vb:['todo','vb'],vr:['todo','vr'],vdeal:['todo','vdeal'],care:['todo','care'],ccat:['cust','cat'],ccls:['cust','cls'],ttab:['t','tab'],tcat:['t','cat'],rtab:['t','rtab'],rprof:['t','prof'],rgeo:['t','geo'],dbk:['d','bucket'],mrange:['mine','range'],mtab:['mine','tab'],trange:['team','range'],mcity:['map','city'],dltab:['deals','tab']};
   for(const k in map){const el=e.target.closest('[data-'+k+']');if(el){const[vn,key]=map[k];let val=el.dataset[k];
     if(k==='tf'){view.todo.hist=false}if(k==='vb'){view.todo.vr='pending';view.todo.tab='visit'}if(k==='ccat'){view.cust.q=''}if(k==='mcity'){view.map.sel=null}
     view[vn][key]=val;render();return}}
@@ -1078,14 +1115,14 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!M.hidden)closeModa
 document.addEventListener('change',e=>{const el=e.target;
   if(el.matches('[data-outcome]')){const O=OBY(el.dataset.outcome);const r=O.records[+el.dataset.i];if(!r.replyAt&&el.value!=='待回复')r.replyAt=now();r.outcome=el.value;log('派单结果',O.id,TBY(r.tid).name+'：'+el.value);render();toast(el.value==='试课成功'?'试课成功！点“录入成交”':'已更新：'+el.value);return}
   if(el.matches('[data-cls]')){const L=LBY(el.dataset.cls);L.cls=el.value;S.changes.push({at:now(),by:me().id,leadId:L.id,what:'客户分级改为 '+(el.value||'未分级')});toast('分级已保存');return}
-  const map={cst:['cust','st'],cown:['cust','owner'],cwx:['cust','wx'],tsort:['t','sort'],rtype:['t','type'],rst:['t','st'],vnode:['todo','vnode']};
+  const map={dst:['deals','st'],dkind:['deals','kind'],cst:['cust','st'],cown:['cust','owner'],cwx:['cust','wx'],tsort:['t','sort'],rtype:['t','type'],rst:['t','st'],vnode:['todo','vnode']};
   if(map[el.id]){view[map[el.id][0]][map[el.id][1]]=el.value;render();return}
   if(el.id==='dwx'){view.d.wx=el.value;render();return}
   if(el.id==='dlead'){view.d.leadId=el.value;if(view.d.oid){const O=OBY(view.d.oid);O.leadId=el.value||null}return}
   if(el.id==='reown'){const L=LBY(el.dataset.id);const from=L.owner;L.owner=el.value;L.wecom=USERS[L.owner].wecoms[0];S.changes.push({at:now(),by:me().id,leadId:L.id,what:'负责人 '+owner(from)+' → '+owner(L.owner)});render();toast('已交给 '+owner(L.owner)+'，记录了交接人和时间');return}
   if(el.matches('[data-mlayer]')){view.map[el.dataset.mlayer]=el.checked;render();return}
   if(el.id==='role'){role=el.value;prev=[];view={};page='todo';render()}});
-let qT;document.addEventListener('input',e=>{const el=e.target;const map={tq:[page==='todo'?'todo':'t','q'],cq:['cust','q'],tq2:['t','q2'],mq:['mine','q']}[el.id];if(!map)return;clearTimeout(qT);qT=setTimeout(()=>{view[map[0]][map[1]]=el.value;render();const n=document.getElementById(el.id);if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length)}},250)});
+let qT;document.addEventListener('input',e=>{const el=e.target;const map={tq:[page==='todo'?'todo':'t','q'],cq:['cust','q'],tq2:['t','q2'],dq:['deals','q']}[el.id];if(!map)return;clearTimeout(qT);qT=setTimeout(()=>{view[map[0]][map[1]]=el.value;render();const n=document.getElementById(el.id);if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length)}},250)});
 document.addEventListener('submit',e=>{if(e.target.id==='tform'){e.preventDefault();teacherSave(e.target)}});
 function teacherSave(f){const lv=[...f.querySelectorAll('[name=lv]:checked')].map(x=>x.value),sj=[...f.querySelectorAll('[name=sj]:checked')].map(x=>x.value);const er=f.querySelector('#tf-err');
   const bad=t=>{er.textContent=t;er.hidden=false};if(!fv(f,'n'))return bad('填一下姓名');if(!fv(f,'p'))return bad('填一下手机或微信');
