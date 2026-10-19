@@ -1,0 +1,830 @@
+<title>锐兴客服工作台</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* 布局：左侧导航 + 主工作区；客户页为左右两栏（左：人和记录，右：位置和派单）；手机宽度导航移到底部 */
+:root{
+  --bg:#F2F3EF; --surface:#FFFFFF; --surface-2:#EBEDE7; --fg:#1A1C19; --muted:#5A5F57; --line:#D8DBD2;
+  --accent:#1D5BBF; --accent-soft:#E2EBFA; --on-accent:#FFFFFF;
+  --good:#1B7546; --good-soft:#E1F2E8; --warn:#A04E0A; --warn-soft:#FBEBDC; --bad:#AE2A20; --bad-soft:#FBE6E3;
+  --violet:#6446B4; --violet-soft:#ECE7FA; --teal:#0F6E73; --teal-soft:#DDF0F0; --shade:rgba(20,22,20,.45);
+  --map-land:#E4E7DF; --map-road:#F7F8F4;
+  --font-body:"Noto Sans SC",system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  --font-display:"Noto Serif SC","Songti SC","STSong",serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111311; --surface:#1A1D1A; --surface-2:#242824; --fg:#E8EBE5; --muted:#A3A89F; --line:#323731;
+  --accent:#86ADF3; --accent-soft:#1C2A45; --on-accent:#0D1830;
+  --good:#72CD9B; --good-soft:#15301F; --warn:#F0A75E; --warn-soft:#3A2814; --bad:#F38B80; --bad-soft:#3C1D1A;
+  --violet:#BCA7F2; --violet-soft:#2A2340; --teal:#6FD0D3; --teal-soft:#123234; --shade:rgba(0,0,0,.6);
+  --map-land:#20251F; --map-road:#2C322B; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111311; --surface:#1A1D1A; --surface-2:#242824; --fg:#E8EBE5; --muted:#A3A89F; --line:#323731;
+  --accent:#86ADF3; --accent-soft:#1C2A45; --on-accent:#0D1830;
+  --good:#72CD9B; --good-soft:#15301F; --warn:#F0A75E; --warn-soft:#3A2814; --bad:#F38B80; --bad-soft:#3C1D1A;
+  --violet:#BCA7F2; --violet-soft:#2A2340; --teal:#6FD0D3; --teal-soft:#123234; --shade:rgba(0,0,0,.6);
+  --map-land:#20251F; --map-road:#2C322B; color-scheme:dark}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:14px;line-height:1.55}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.app{display:flex;min-height:100%}
+.side{width:228px;flex:none;background:var(--surface);border-right:1px solid var(--line);padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:16px;display:flex;flex-direction:column;gap:18px;position:sticky;top:0;align-self:flex-start;height:100vh;overflow:auto}
+.brand{display:flex;flex-direction:column;gap:2px}
+.brand b{font-family:var(--font-display);font-size:22px;letter-spacing:.04em}
+.brand span{font-size:12px;color:var(--muted)}
+.rolebox{display:flex;flex-direction:column;gap:6px}
+.rolebox label{font-size:12px;color:var(--muted);letter-spacing:.04em}
+#nav{display:flex;flex-direction:column;gap:2px}
+.nv{display:flex;align-items:center;justify-content:space-between;gap:8px;height:42px;padding:0 12px;border-radius:8px;border:0;background:transparent;text-align:left;cursor:pointer;font-size:15px}
+.nv:hover{background:var(--surface-2)}
+.nv[aria-current="page"]{background:var(--accent-soft);color:var(--accent);font-weight:700}
+.nv .bd{min-width:22px;height:20px;padding:0 6px;border-radius:999px;background:var(--bad);color:var(--surface);font-size:12px;display:inline-flex;align-items:center;justify-content:center;font-weight:700}
+.nv .new{font-size:11px;color:var(--teal);background:var(--teal-soft);border-radius:999px;padding:0 6px;font-weight:500}
+.sidefoot{margin-top:auto;display:flex;flex-direction:column;gap:8px;font-size:12px;color:var(--muted)}
+main{flex:1;min-width:0;padding-block:20px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+@media (min-width:821px){main{padding-left:28px}}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.ph{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px}
+.ph h1{margin:0;font-family:var(--font-display);font-size:26px;text-wrap:balance}
+.eyebrow{font-size:12px;color:var(--muted);letter-spacing:.06em}
+h2{margin:0;font-size:16px}
+h3{margin:0;font-size:14px}
+.muted{color:var(--muted);font-weight:400;font-size:13px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.cardhead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.grid2{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px;align-items:start}
+.grid2 > *{min-width:0}
+.stack{display:flex;flex-direction:column;gap:16px;min-width:0}
+@media (max-width:980px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.btn{height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:500}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.good{background:var(--good);border-color:var(--good);color:var(--surface);font-weight:500}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn.sm{height:32px;padding:0 10px;font-size:13px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.link{border:0;background:none;padding:0;color:var(--accent);cursor:pointer;font:inherit;text-align:left}
+.chip{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:999px;font-size:12px;background:var(--surface-2);color:var(--muted);white-space:nowrap;font-weight:500}
+.chip.blue{background:var(--accent-soft);color:var(--accent)}
+.chip.green{background:var(--good-soft);color:var(--good)}
+.chip.orange{background:var(--warn-soft);color:var(--warn)}
+.chip.red{background:var(--bad-soft);color:var(--bad)}
+.chip.violet{background:var(--violet-soft);color:var(--violet)}
+.chip.teal{background:var(--teal-soft);color:var(--teal)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.star{border:0;background:none;cursor:pointer;font-size:18px;line-height:1;padding:2px;color:var(--line)}
+.star.on{color:var(--violet)}
+.row{display:flex;align-items:center;gap:12px;padding:12px 4px;border-top:1px solid var(--line)}
+.row:first-of-type{border-top:0}
+.row.click{cursor:pointer}
+.row.click:hover{background:var(--surface-2)}
+.rmain{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.rtitle{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-weight:500}
+.rsub{font-size:13px;color:var(--muted)}
+.rdue{font-size:13px;white-space:nowrap;font-variant-numeric:tabular-nums;text-align:right}
+.rdue.bad{color:var(--bad);font-weight:700}
+.rdue.warn{color:var(--warn);font-weight:500}
+.ract{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+@media (max-width:560px){.row{flex-wrap:wrap}.rmain{flex-basis:calc(100% - 40px)}.rdue{order:3;text-align:left;padding-left:34px}.ract{order:4;margin-left:auto}}
+.empty{padding:16px;border-radius:8px;background:var(--surface-2);color:var(--muted);font-size:13px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.kpi .l{font-size:13px;color:var(--muted)}
+.kpi .v{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.kpi .s{font-size:12px;color:var(--muted)}
+.tw{overflow-x:auto}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+.t th{font-weight:500;color:var(--muted);text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap;font-size:13px}
+.t td{padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap;vertical-align:top}
+.t tr:last-child td{border-bottom:0}
+.t .n{text-align:right;font-variant-numeric:tabular-nums}
+.t tr.click{cursor:pointer}
+.t tr.click:hover td{background:var(--surface-2)}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{height:44px;padding:0 14px;border:0;border-bottom:3px solid transparent;background:transparent;cursor:pointer;color:var(--muted);font-size:15px;white-space:nowrap}
+.tab[aria-selected="true"]{border-bottom-color:var(--accent);color:var(--fg);font-weight:700}
+.tab .c{font-size:12px;color:var(--muted);font-weight:400;margin-left:4px}
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.fld{display:flex;flex-direction:column;gap:4px;min-width:0}
+.fld > label,.fld > .lb{font-size:12px;color:var(--muted)}
+input[type=text],input[type=date],input[type=search],input[type=tel],input[type=number],select,textarea{height:40px;border:1px solid var(--line);border-radius:8px;padding:0 10px;background:var(--surface);min-width:0}
+textarea{height:auto;min-height:84px;padding:8px 10px;resize:vertical;width:100%}
+.form{display:flex;flex-direction:column;gap:14px}
+.form .fld input,.form .fld select{width:100%}
+.form .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:480px){.form .two{grid-template-columns:minmax(0,1fr)}}
+.checks{display:flex;flex-wrap:wrap;gap:6px 14px}
+.checks label{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--fg)}
+.hint{font-size:13px;color:var(--muted);margin:0}
+.err{font-size:13px;color:var(--bad);margin:0;font-weight:500}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;flex-wrap:wrap}
+.seg button{height:36px;padding:0 12px;border:0;background:var(--surface);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;font-size:14px;margin:0}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;min-width:0}
+.timeline{display:flex;flex-direction:column}
+.ti{display:grid;grid-template-columns:92px minmax(0,1fr);gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.ti:first-child{border-top:0}
+.ti .d{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.ti p{margin:2px 0 0}
+.who{font-size:12px;color:var(--muted)}
+.note{font-size:13px;color:var(--muted);background:var(--surface-2);border-radius:8px;padding:10px 12px;line-height:1.6}
+.note b{color:var(--fg)}
+details.merge{font-size:13px;color:var(--muted)}
+details.merge summary{cursor:pointer;color:var(--accent);width:max-content;max-width:100%}
+details.merge > div{margin-top:8px}
+/* 老师经营分类卡（沿用现系统的样子） */
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px}
+.cat{border:1px solid var(--line);border-top:3px solid var(--line);border-radius:10px;background:var(--surface);padding:10px 12px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:2px;min-width:0}
+.cat b{font-size:14px}
+.cat .v{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.cat .s{font-size:12px;color:var(--muted);line-height:1.4}
+.cat[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:var(--accent-soft)}
+.cat.c-focus{border-top-color:var(--violet)} .cat.c-focus b{color:var(--violet)}
+.cat.c-geo{border-top-color:var(--good)} .cat.c-geo b{color:var(--good)}
+.cat.c-nogeo{border-top-color:var(--warn)} .cat.c-nogeo b{color:var(--warn)}
+.cat.c-best{border-top-color:var(--teal)} .cat.c-best b{color:var(--teal)}
+.cat.c-A{border-top-color:var(--bad)} .cat.c-B{border-top-color:var(--warn)} .cat.c-C{border-top-color:var(--violet)} .cat.c-D{border-top-color:var(--accent)} .cat.c-E{border-top-color:var(--muted)}
+.qf{display:flex;gap:6px;align-items:flex-start;min-width:220px}
+.qf textarea{min-height:40px;height:40px;font-size:13px}
+/* 回访节点 */
+.nodes{display:flex;gap:6px;flex-wrap:wrap}
+.node{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:64px;padding:6px 8px;border-radius:8px;background:var(--surface-2);font-size:12px;color:var(--muted);border:0;cursor:default}
+.node b{font-size:13px;color:var(--fg)}
+.node.done{background:var(--good-soft);color:var(--good)}
+.node.due{background:var(--bad-soft);color:var(--bad);cursor:pointer}
+.node.due b{color:var(--bad)}
+.node.cancel{text-decoration:line-through;opacity:.6}
+/* 派单 */
+.kanban{display:grid;grid-template-columns:repeat(4,minmax(230px,1fr));gap:12px;overflow-x:auto;padding-bottom:4px}
+.col{background:var(--surface-2);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.col h3{display:flex;justify-content:space-between;padding:2px 4px}
+.ocard{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;cursor:pointer;text-align:left}
+.ocard:hover{border-color:var(--accent)}
+.ocard b{font-size:15px}
+.steps{display:flex;gap:4px;flex-wrap:wrap}
+.steps span{font-size:12px;padding:2px 8px;border-radius:999px;background:var(--surface-2);color:var(--muted)}
+.steps span.on{background:var(--accent);color:var(--on-accent)}
+.steps span.okk{background:var(--good);color:var(--surface)}
+.steps span.no{background:var(--bad-soft);color:var(--bad)}
+.prog{height:8px;background:var(--surface-2);border-radius:999px;overflow:hidden;min-width:80px}
+.prog i{display:block;height:100%;background:var(--teal)}
+.mapbox{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--map-land)}
+.mapbox svg{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px}
+.legend label{display:inline-flex;gap:6px;align-items:center;cursor:pointer}
+.sw{width:12px;height:12px;border-radius:50%;display:inline-block}
+.dist3{display:flex;gap:8px;flex-wrap:wrap}
+.dist3 div{flex:1;min-width:76px;background:var(--surface-2);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column}
+.dist3 b{font-size:18px;font-variant-numeric:tabular-nums}
+.dist3 span{font-size:12px;color:var(--muted)}
+#modal{position:fixed;inset:0;background:var(--shade);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+.dlg{background:var(--surface);color:var(--fg);border-radius:14px;width:100%;max-width:560px;max-height:calc(100vh - 32px);overflow:auto;padding:20px 22px;display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.dlg.wide{max-width:820px}
+.dlg h2{font-size:18px}
+.dlg .foot{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:60;max-width:calc(100% - 32px);font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.back{border:0;background:none;color:var(--accent);cursor:pointer;padding:0;font-size:14px;width:max-content}
+@media (max-width:820px){
+  .app{flex-direction:column}
+  .side{width:auto;height:auto;align-self:stretch;position:sticky;top:env(safe-area-inset-top,0px);z-index:20;flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap;padding-block:10px;padding-right:max(16px,env(safe-area-inset-right,0px));border-right:0;border-bottom:1px solid var(--line);gap:10px}
+  body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
+  .brand span,.rolebox label,.sidefoot{display:none}
+  .rolebox select{max-width:58vw}
+  #nav{position:fixed;left:0;right:0;bottom:0;z-index:25;flex-direction:row;overflow-x:auto;background:var(--surface);border-top:1px solid var(--line);padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px));gap:4px}
+  .nv{flex:1 0 auto;height:44px;font-size:14px;justify-content:center}
+  .nv .new{display:none}
+  main{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+  #toast{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+}
+@media (prefers-reduced-motion:no-preference){.dlg{animation:pop .16s ease-out}@keyframes pop{from{transform:translateY(6px);opacity:.6}to{transform:none;opacity:1}}}
+</style>
+
+<div class="app">
+  <aside class="side">
+    <div class="brand"><b>锐兴</b><span>客服版演示 · 第 2 版</span></div>
+    <div class="rolebox">
+      <label for="role">切换演示身份</label>
+      <select id="role">
+        <option value="cs">客服 · 王雨（绵阳）</option>
+        <option value="sup">城市主管 · 张敏（绵阳、自贡）</option>
+      </select>
+    </div>
+    <nav id="nav" aria-label="主菜单"></nav>
+    <div class="sidefoot">
+      <div>数据全部虚构。“现在”按 2026 年 10 月 19 日 10:30 计算。</div>
+      <div>操作只保存在当前页面，刷新即恢复。</div>
+      <button class="btn sm" data-act="reset" type="button">重置演示数据</button>
+    </div>
+  </aside>
+  <main id="main"></main>
+</div>
+<div id="modal" hidden></div>
+<div id="toast" role="status" hidden></div>
+
+<script>
+/* ================= 基础工具 ================= */
+const TODAY='2026-10-19';
+const pad=n=>String(n).padStart(2,'0');
+const dn=s=>{const[y,m,d]=s.slice(0,10).split('-').map(Number);return Date.UTC(y,m-1,d)/864e5};
+const nd=n=>new Date(Math.round(n)*864e5).toISOString().slice(0,10);
+const addD=(s,k)=>nd(dn(s)+k);
+const addM=(s,k)=>{let[y,m,d]=s.split('-').map(Number);m+=k;while(m<1){m+=12;y--}while(m>12){m-=12;y++}const last=new Date(Date.UTC(y,m,0)).getUTCDate();return y+'-'+pad(m)+'-'+pad(Math.min(d,last))};
+const md=s=>{const p=s.slice(0,10).split('-');return (+p[1])+'月'+(+p[2])+'日'};
+const WK=['周日','周一','周二','周三','周四','周五','周六'];
+const wk=s=>WK[new Date(dn(s)*864e5).getUTCDay()];
+const tmin=s=>dn(s)*1440+(+s.slice(11,13)||0)*60+(+s.slice(14,16)||0);
+const fromMin=m=>nd(Math.floor(m/1440))+' '+pad(Math.floor(m%1440/60))+':'+pad(m%60);
+let CLOCK=tmin('2026-10-19 10:30');
+const now=()=>fromMin(++CLOCK);
+const daysAgo=s=>dn(TODAY)-dn(s);
+function rel(s){const d=CLOCK-tmin(s);if(d<60)return Math.max(1,d)+' 分钟前';if(d<1440&&s.slice(0,10)===TODAY)return Math.floor(d/60)+' 小时前';const k=daysAgo(s);if(k===1)return '昨天 '+s.slice(11,16);return md(s)+(s.length>10?' '+s.slice(11,16):'')}
+const h=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const yuan=n=>(n<0?'−¥':'¥')+Math.abs(Math.round(n)).toLocaleString('zh-CN');
+const pct=(a,b)=>b?Math.round(a/b*100)+'%':'—';
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const sum=(a,f)=>a.reduce((s,x)=>s+f(x),0);
+const chip=(t,c)=>`<span class="chip ${c||''}">${h(t)}</span>`;
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+let R;
+const pick=a=>a[Math.floor(R()*a.length)];
+const ri=(a,b)=>a+Math.floor(R()*(b-a+1));
+function wpick(o){let s=0;for(const k in o)s+=o[k];let r=R()*s;for(const k in o){r-=o[k];if(r<=0)return k}return Object.keys(o)[0]}
+
+/* ================= 业务常量（来自现系统） ================= */
+const USERS={
+  u1:{id:'u1',name:'王雨',role:'客服',cities:['绵阳'],wecom:'锐兴绵阳1号'},
+  u12:{id:'u12',name:'刘佳',role:'客服',cities:['绵阳'],wecom:'锐兴绵阳2号'},
+  u4:{id:'u4',name:'张敏',role:'城市主管',cities:['绵阳','自贡'],wecom:'锐兴自贡1号'}
+};
+const TEAM=['u1','u12','u4'];
+const ROLE_UID={cs:'u1',sup:'u4'};
+const CITY_D={
+  绵阳:[['涪城区',8,6],['游仙区',13.5,4.5],['高新区',4.5,9.5],['经开区',12,10.5],['科创园',16.5,8]],
+  自贡:[['自流井区',8,7],['大安区',12.5,5.5],['贡井区',4.5,8],['沿滩区',12,10.5]]
+};
+const COMM=['翠湖花园','锦江苑','东辰府','南河苑','桃园小区','滨江一号','绿城玉园','书香名邸','学府雅居','香榭里','金桂园','望江台','和平新村','御景湾','文昌苑','云顶华府','清水湾','长乐小区'];
+const SURN='王李张刘陈杨黄赵吴周徐孙马朱胡郭何林罗高梁宋郑谢韩唐冯许邓曹彭曾田董潘袁蔡蒋余杜叶程魏苏吕丁任沈姚卢姜崔钟谭陆汪范金石廖贾夏韦方白邹孟熊秦邱江尹薛段雷侯龙史陶黎贺顾毛郝龚邵万严武戴孔向汤'.split('');
+const GIVEN=['子涵','一诺','欣怡','梓萱','浩然','宇轩','思远','雨桐','子墨','俊熙','可馨','诗涵','皓轩','梓睿','语桐','博文','嘉怡','明哲','若曦','天佑'];
+const TGIVEN=['佳怡','雪','文静','晓东','思琪','磊','婷婷','宇','晨曦','慧','志强','丹','欣然','浩','梦瑶','俊','琳','鑫','倩','涛'];
+const GRADES=['一年级','二年级','三年级','四年级','五年级','六年级','初一','初二','初三','高一','高二','高三'];
+const SUBJ=['数学','英语','语文','物理','化学','全科辅导'];
+const LEVELS=['小学','初中','高中'];
+const level=g=>{const i=GRADES.indexOf(g);return i<6?'小学':i<9?'初中':'高中'};
+const SOURCES=['抖音','闲鱼','小红书','转介绍','快手','朋友圈','地推','其他'];
+const SCHOOLS={小学:['涪城实验小学','东辰小学','南山小学','先锋路小学'],初中:['东辰国际学校初中部','南山中学实验学校','富乐国际学校'],高中:['绵阳中学','南山中学','东辰高中部']};
+/* 现系统 leads.status 的全部取值 */
+const OPEN=['新线索','已联系','已加微信','已报价','转单'];
+const STATUS_CLS={新线索:'blue',已联系:'',已加微信:'violet',已报价:'orange',转单:'teal',转单十天未成交:'red',已成交:'green',成交后退费:'red',已流失:''};
+const VISIT_DAYS=[7,30,90,180,365];
+const LOST_REASONS=['价格太高','已找到其他老师','孩子不需要了','一直联系不上','只是咨询'];
+const REFUND_REASONS=['试课不满意','家长时间变动','老师临时取消','价格原因','孩子不愿意'];
+const PUSH_STAGES=['已推送','老师已回复','约好试课','试课成功','试课失败','老师拒绝'];
+const GEO={success:['已精准定位','green'],approximate:['大致定位','orange'],failed:['定位失败','red'],pending:['未定位','red']};
+const hasLoc=o=>o.geo==='success'||o.geo==='approximate';
+const FTEXT={已联系:['电话打通，家长想先了解收费','约好晚上再聊','介绍了上门辅导的流程'],已加微信:['已加微信，发了老师介绍','家长看了资料，还在比较','家长问能不能周末上课'],已报价:['报了价格，家长在考虑','家长觉得价格可以，等周末定时间','约了试课时间待确认'],转单:['已发单给附近老师','老师回复了，正在约时间']};
+
+/* ================= 演示数据 ================= */
+let S;
+function place(city){const d=pick(CITY_D[city]);return {district:d[0],x:clamp(d[1]+(R()-.5)*5,.6,19.4),y:clamp(d[2]+(R()-.5)*4,.6,13.4)}}
+function phone(){return '1'+pick(['3','5','8','9'])+ri(0,9)+'****'+String(ri(0,9999)).padStart(4,'0')}
+function seed(){
+  R=rng(20261019);CLOCK=tmin('2026-10-19 10:30');
+  S={leads:[],teachers:[],orders:[],deals:[],orgs:[],log:[],seq:1};
+  const id=p=>p+(S.seq++);
+  /* 老师 */
+  for(let i=0;i<130;i++){
+    const city=i<100?'绵阳':'自贡',p=place(city);
+    const g=wpick({success:42,approximate:28,failed:30});
+    const lv=R()<.5?[pick(LEVELS)]:LEVELS.filter(()=>R()<.6);if(!lv.length)lv.push('初中');
+    const sj=[...new Set([pick(SUBJ),pick(SUBJ),R()<.3?pick(SUBJ):'数学'])];
+    const hasHist=R()<.42;
+    const lastDeal=hasHist?addD(TODAY,-wpick({[ri(1,28)]:48,[ri(32,88)]:36,[ri(95,175)]:9,[ri(190,360)]:3,[ri(370,500)]:1})):null;
+    S.teachers.push({id:id('t'),name:pick(SURN)+pick(TGIVEN),phone:phone(),sex:R()<.7?'女':'男',type:pick(['在校大学生','在校大学生','研究生','在职老师','专职家教']),
+      city,district:p.district,address:p.district+pick(COMM)+'附近',x:g==='failed'?null:p.x,y:g==='failed'?null:p.y,geo:g,
+      levels:lv,subjects:sj,status:R()<.06?'暂停接单':'可接单',focus:false,
+      hist:hasHist?{count:ri(1,4),fee:ri(3,14)*100,last:lastDeal}:null,
+      notes:[],entered:addD(TODAY,-ri(5,400)),enteredBy:pick(['郑可','郑可','王雨','刘佳','张敏'])});
+  }
+  S.teachers.filter(t=>t.hist).slice(0,9).forEach(t=>t.focus=true);
+  /* 客户 */
+  const mkLead=(o)=>{const p=place(o.city);const g=o.geo||wpick({success:68,approximate:16,failed:9,pending:7});
+    const grade=pick(GRADES),lvl=level(grade);
+    const L=Object.assign({id:id('c'),parent:pick(SURN)+(R()<.6?'女士':'先生'),phone:phone(),
+      child:{name:pick(SURN)+pick(GIVEN),grade,school:pick(SCHOOLS[lvl])},subject:pick(SUBJ),
+      district:p.district,address:p.district+pick(COMM)+ri(1,24)+'栋',x:hasLoc({geo:g})?p.x:null,y:hasLoc({geo:g})?p.y:null,geo:g,
+      source:pick(SOURCES.slice(0,4)),entry:'standard',inv:'',starred:false,follow:[],nextDue:null,lostReason:'',quote:null,transferAt:null},o);
+    L.wecom=USERS[L.owner].wecom;S.leads.push(L);return L};
+  const owners={u1:46,u12:30,u4:24};
+  for(let i=0;i<80;i++){
+    const owner=wpick(owners),city=owner==='u4'&&R()<.6?'自贡':'绵阳';
+    const st=wpick({已联系:12,已加微信:16,已报价:9,转单:9,已成交:14,成交后退费:4,已流失:6});
+    const cOff=st==='已成交'||st==='成交后退费'?ri(8,60):ri(1,32);
+    const created=fromMin(tmin(addD(TODAY,-cOff))+ri(9,21)*60+ri(0,59));
+    const L=mkLead({owner,city,created,status:st});
+    let t=tmin(created)+ri(20,60*(R()<.8?8:30));
+    const path=['已联系','已加微信','已报价','转单'];const upto=st==='已流失'?ri(0,2):st==='已联系'?0:st==='已加微信'?1:st==='已报价'?2:3;
+    for(let k=0;k<=upto;k++){if(t>CLOCK-90)break;L.follow.push({at:fromMin(t),by:owner,status:path[k],text:pick(FTEXT[path[k]])});t+=ri(1,4)*1440+ri(-120,240)}
+    L.follow.sort((a,b)=>a.at<b.at?-1:1);
+    if(OPEN.includes(st))L.nextDue=addD(TODAY,ri(-4,4));
+    if(st==='已报价'||st==='转单')L.quote=ri(15,26)*10;
+    if(st==='已流失'){L.lostReason=pick(LOST_REASONS);L.follow.push({at:fromMin(Math.min(t,CLOCK-200)),by:owner,status:'已流失',text:'家长说：'+L.lostReason})}
+    if(R()<.12)L.starred=true;
+  }
+  /* 今天和昨晚进来的新客户（要 12 小时内首次跟进） */
+  [['u1',-30],['u1',-200],['u1',-610],['u1',-800],['u12',-120],['u12',-700],['u4',-90],['u1',-15]].forEach(([o,m])=>{
+    mkLead({owner:o,city:o==='u4'?'自贡':'绵阳',created:fromMin(CLOCK+m),status:'新线索',source:pick(['抖音','闲鱼','小红书'])})});
+  /* 库存客户：历史导入，没激活前不算新增 */
+  for(let i=0;i<34;i++){const o=wpick({u1:50,u12:30,u4:20});
+    const L=mkLead({owner:o,city:o==='u4'?'自贡':'绵阳',created:addD(TODAY,-ri(40,60))+' 09:00',status:'新线索',source:'库存客户',entry:'inventory',inv:'pending',
+      origin:addD(TODAY,-ri(120,900)),geo:wpick({success:30,approximate:20,pending:50})});
+    if(L.geo==='pending'){L.x=null;L.y=null}
+    L.history=pick(['咨询过'+L.child.grade+L.subject+'，嫌贵没成交','暑假问过一对一，后来没回复','老客户介绍来的，当时孩子还小','留过电话，没加上微信']);
+  }
+  /* 老客户：较早成交，用来演示 90/180/365 天回访 */
+  for(let i=0;i<16;i++){const o=wpick({u1:55,u12:25,u4:20});
+    mkLead({owner:o,city:o==='u4'?'自贡':'绵阳',created:addD(TODAY,-ri(70,420))+' 14:00',status:'已成交',geo:'success'})}
+  /* 订单和推送：转单客户 */
+  S.leads.filter(L=>L.status==='转单').forEach(L=>{
+    L.transferAt=addD(TODAY,-ri(2,16));
+    const O=mkOrder(L,L.transferAt+' 15:00',L.owner);
+    nearTeachers(L).slice(0,ri(1,3)).forEach((x,i)=>O.pushes.push({tid:x.t.id,at:L.transferAt+' '+pad(15+i)+':10',by:L.owner,stage:pick(['已推送','老师已回复','约好试课','老师拒绝'])}));
+    if(!L.x)O.pushes=[];
+  });
+  /* 成交 */
+  S.leads.filter(L=>L.status==='已成交'||L.status==='成交后退费').forEach(L=>{
+    const date=addD(L.created,ri(2,Math.max(2,Math.min(12,daysAgo(L.created)-1))));
+    const near=nearTeachers(L);const t=near.length?near[0].t:pick(S.teachers.filter(t=>t.city===L.city));
+    const O=mkOrder(L,addD(date,-2)+' 16:00',L.owner);O.pushes.push({tid:t.id,at:addD(date,-2)+' 16:20',by:L.owner,stage:'试课成功'});O.status='已成交';
+    L.follow.push({at:date+' 19:30',by:L.owner,status:'已成交',text:'试课满意，确定合作'});
+    const D=mkDeal(L,t.id,date,'info',{fee:ri(25,46)*10,hourly:ri(15,26)*10,weekly:ri(1,3)},L.owner);
+    D.visits.forEach(v=>{if(v.due<=TODAY&&R()<.45){v.done=true;v.by=L.owner;v.at=addD(v.due,ri(0,2))+' 16:00';v.result=pick(['满意','满意','一般']);v.note='孩子适应得不错'}});
+    if(L.status==='成交后退费'){const rd=addD(date,ri(3,12));if(rd<=TODAY){D.refund={amount:Math.round(D.fee*pick([1,.8,.5])),date:rd,side:pick(['家长侧','老师侧','待定']),reason:pick(REFUND_REASONS),by:L.owner,at:rd+' 11:00'};cancelVisits(D)}else L.status='已成交'}
+  });
+  /* 机构课（开发中的新功能） */
+  const orgLeads=S.leads.filter(L=>L.status==='已成交'&&L.owner!=='u12').slice(0,3);
+  orgLeads.forEach((L,i)=>{const D=S.deals.find(d=>d.leadId===L.id);D.kind='org';D.fee=0;
+    const total=[20,11,24][i],start=addD(TODAY,-[24,30,10][i]);
+    const G=mkOrg(D,{price:[200,180,220][i],teacherPay:[150,130,160][i],total,pay:['company','teacher','company'][i],settle:['weekly','monthly','per_lesson'][i],start,perWeek:2,time:['周一 19:00','周六 9:00','周三 18:30'][i]});
+    G.lessons.forEach(x=>{if(x.date<TODAY){x.result=R()<.08?'rescheduled':'completed';x.by=L.owner;x.at=x.date+' 21:00'}});
+    if(i===1){G.receipts.push({date:addD(TODAY,-1),amount:G.price*4,status:'待确认',note:'老师代收 4 次课'})}
+    if(i===0){G.lessons.forEach((x,k)=>{if(k<17&&x.date<TODAY)x.result='completed'})}
+  });
+  S.leads.forEach(L=>L.follow.sort((a,b)=>a.at<b.at?-1:1));
+}
+function mkOrder(L,at,by){const O={id:'o'+(S.seq++),leadId:L?L.id:null,city:L?L.city:'绵阳',address:L?L.address:'',district:L?L.district:'',x:L?L.x:null,y:L?L.y:null,
+  grade:L?L.child.grade:'初二',subjects:L?[L.subject]:['数学'],pay:L&&L.quote?L.quote:null,time:'周末或工作日晚上',raw:'',created:at,by,pushes:[],status:'进行中'};S.orders.push(O);return O}
+function mkDeal(L,tid,date,kind,o,by){const D=Object.assign({id:'d'+(S.seq++),leadId:L.id,teacherId:tid,date,kind,by,at:date+' 20:00',refund:null,visits:VISIT_DAYS.map(k=>({k,due:addD(date,k),done:false,cancelled:false}))},o);S.deals.push(D);return D}
+function cancelVisits(D){D.visits.forEach(v=>{if(!v.done&&v.due>=D.refund.date)v.cancelled=true})}
+function mkOrg(D,o){const G=Object.assign({id:'g'+(S.seq++),dealId:D.id,leadId:D.leadId,teacherId:D.teacherId,status:'进行中',lessons:[],receipts:[]},o);
+  let d=o.start,n=0;while(n<o.total){G.lessons.push({id:'l'+(S.seq++),date:d,result:'pending'});n++;d=addD(d,n%2?3:4)}
+  if(o.pay==='company')G.receipts.push({date:o.start,amount:o.price*o.total,status:'已到账',note:'家长一次付清 '+o.total+' 次课'});
+  S.orgs.push(G);return G}
+
+/* ================= 计算规则 ================= */
+const LBY=id=>S.leads.find(x=>x.id===id),TBY=id=>S.teachers.find(x=>x.id===id),OBY=id=>S.orders.find(x=>x.id===id),DBY=id=>S.deals.find(x=>x.id===id),GBY=id=>S.orgs.find(x=>x.id===id);
+const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+let role='cs';
+const me=()=>USERS[ROLE_UID[role]];
+const isSup=()=>role==='sup';
+const myLeads=()=>S.leads.filter(L=>isSup()?TEAM.includes(L.owner):L.owner===me().id);
+const myCities=()=>me().cities;
+function dispStatus(L){if(L.status==='转单'&&L.transferAt&&daysAgo(L.transferAt)>=10)return '转单十天未成交';return L.status}
+function leadDeal(L){return S.deals.filter(d=>d.leadId===L.id).sort((a,b)=>a.date<b.date?1:-1)[0]}
+const firstDue=L=>tmin(L.created)+12*60;
+const isLive=L=>L.entry==='standard'||L.inv==='active';
+/* 派单匹配：5 公里内，按 地址+年级+科目 → 地址+年级 → 仅地址 三级，再按距离（现系统 teachers/match 规则） */
+function nearTeachers(pt,opt){if(!pt||pt.x==null)return[];const grade=opt?opt.grade:pt.child.grade,subj=opt?opt.subjects:[pt.subject];
+  return S.teachers.filter(t=>t.city===pt.city&&t.status==='可接单'&&hasLoc(t)).map(t=>{const d=dist(t,pt);const g=t.levels.includes(level(grade));const s=subj.some(x=>t.subjects.includes(x))||t.subjects.includes('全科辅导');return{t,d,tier:g&&s?1:g?2:3}}).filter(x=>x.d<=5).sort((a,b)=>a.tier-b.tier||a.d-b.d)}
+function nearParents(pt,exceptId){if(!pt||pt.x==null)return[];return S.leads.filter(L=>L.id!==exceptId&&L.city===pt.city&&L.x!=null&&isLive(L)).map(L=>({L,d:dist(L,pt)})).filter(x=>x.d<=5).sort((a,b)=>a.d-b.d)}
+const TIER=['','年级科目都对','年级对','只是距离近'];
+/* 老师经营：A–E 按最近成交自然月；优质 = 成交≥2 次或实收≥1000 元（退费扣钱不扣次数） */
+function tStats(t){const ds=S.deals.filter(d=>d.teacherId===t.id&&d.kind==='info');let count=(t.hist?t.hist.count:0)+ds.length;let fee=(t.hist?t.hist.fee:0)+sum(ds,d=>d.fee-(d.refund?d.refund.amount:0));
+  const orgN=S.deals.filter(d=>d.teacherId===t.id&&d.kind==='org').length;count+=orgN;
+  let last=t.hist?t.hist.last:null;S.deals.filter(d=>d.teacherId===t.id).forEach(d=>{if(!last||d.date>last)last=d.date});
+  const band=!last?'':last>=addM(TODAY,-1)?'A':last>=addM(TODAY,-3)?'B':last>=addM(TODAY,-6)?'C':last>=addM(TODAY,-12)?'D':'E';
+  return{count,fee,last,band,best:count>=2||fee>=1000,dealt:count>0}}
+const BAND_DESC={A:'≤1个月',B:'>1且≤3个月',C:'>3且≤6个月',D:'>6且≤12个月',E:'>12个月'};
+
+/* 今日待办 */
+function todos(){const leads=myLeads();const T={first:[],due:[],ten:[],visit:[],org:[],geo:[]};
+  leads.forEach(L=>{
+    if(L.status==='新线索'&&isLive(L)&&!L.follow.length)T.first.push(L);
+    else if(OPEN.includes(L.status)&&dispStatus(L)!=='转单十天未成交'&&L.nextDue&&L.nextDue<=TODAY&&!(L.entry==='inventory'&&L.inv==='pending'))T.due.push(L);
+    if(dispStatus(L)==='转单十天未成交')T.ten.push(L);
+    if(OPEN.includes(L.status)&&L.status!=='新线索'&&!hasLoc(L))T.geo.push(L);
+  });
+  S.deals.forEach(D=>{const L=LBY(D.leadId);if(!leads.includes(L))return;D.visits.forEach(v=>{if(!v.done&&!v.cancelled&&v.due<=TODAY&&v.due>addD(TODAY,-45))T.visit.push({D,L,v})})});
+  S.orgs.forEach(G=>{const L=LBY(G.leadId);if(!leads.includes(L)||G.status!=='进行中')return;
+    G.lessons.forEach(x=>{if(x.result==='pending'&&x.date<=TODAY)T.org.push({G,L,kind:'lesson',x})});
+    G.receipts.forEach(r=>{if(r.status==='待确认')T.org.push({G,L,kind:'receipt',r})});
+    if(orgLeft(G)<=2)T.org.push({G,L,kind:'renew'});
+  });
+  T.first.sort((a,b)=>firstDue(a)-firstDue(b));T.due.sort((a,b)=>a.nextDue<b.nextDue?-1:1);T.visit.sort((a,b)=>a.v.due<b.v.due?-1:1);
+  return T}
+const orgUsed=G=>G.lessons.filter(x=>x.result==='completed'||x.result==='partial').length;
+const orgLeft=G=>G.total-orgUsed(G);
+function todoCount(){const T=todos();return T.first.length+T.due.length+T.ten.length+T.visit.length+T.org.length}
+
+function log(type,ref,text){S.log.push({type,ref,text,by:me().id,at:now()})}
+
+/* ================= 页面框架 ================= */
+let page='todo',prev=[],view={};
+const NAV={cs:[['todo','今日待办'],['customers','我的客户'],['orders','派单'],['teachers','老师'],['org','机构课'],['map','地图'],['mine','我的数据']],
+  sup:[['todo','今日待办'],['customers','辖区客户'],['orders','派单'],['teachers','老师'],['org','机构课'],['map','地图'],['team','团队']]};
+function go(p,keep){if(!keep)prev.push(page);page=p;render();window.scrollTo(0,0)}
+function back(){page=prev.pop()||'todo';render();window.scrollTo(0,0)}
+function navHtml(){const base=page.split(':')[0];const cur=base==='cust'?'customers':base==='teacher'?'teachers':base;const n=todoCount();
+  return NAV[role].map(([k,l])=>`<button class="nv" type="button" data-nav="${k}" ${cur===k?'aria-current="page"':''}><span>${l}</span>${k==='todo'&&n?`<span class="bd">${n}</span>`:''}${k==='org'?'<span class="new">开发中</span>':''}</button>`).join('')}
+function render(){document.getElementById('nav').innerHTML=navHtml();const[p,arg]=page.split(':');const f=PAGES[p]||PAGES.todo;document.getElementById('main').innerHTML='<div class="wrap">'+f(arg)+'</div>'}
+const merged=(txt)=>`<details class="merge"><summary>这页合并了旧系统的哪些页面</summary><div class="note">${txt}</div></details>`;
+const empty=t=>`<div class="empty">${t}</div>`;
+const statusChip=L=>{const s=dispStatus(L);return chip(L.entry==='inventory'&&L.inv==='pending'?'库存未激活':s,L.entry==='inventory'&&L.inv==='pending'?'':STATUS_CLS[s])};
+const geoChip=o=>hasLoc(o)&&o.geo==='success'?'':chip(GEO[o.geo][0],GEO[o.geo][1]);
+const childLine=L=>`${h(L.child.name)} · ${h(L.child.grade)} · ${h(L.subject)}`;
+const owner=id=>USERS[id]?USERS[id].name:id;
+
+/* ================= 今日待办 ================= */
+const PAGES={};
+PAGES.todo=()=>{const T=todos();const nowM=CLOCK;
+  const firstOver=T.first.filter(L=>firstDue(L)<nowM).length,dueOver=T.due.filter(L=>L.nextDue<TODAY).length;
+  const sec=(title,sub,items,rowf,cls)=>`<section class="card"><div class="cardhead"><h2>${title} <span class="muted">${items.length} 个</span></h2><span class="muted">${sub}</span></div>${items.length?`<div>${items.map(rowf).join('')}</div>`:empty('都处理完了')}</section>`;
+  const rowLead=(L,dueTxt,dueCls,act)=>`<div class="row click" data-open="${L.id}"><button class="star ${L.starred?'on':''}" data-act="star" data-id="${L.id}" type="button" aria-label="重点客户">★</button><div class="rmain"><div class="rtitle">${h(L.parent)} ${statusChip(L)} ${geoChip(L)} ${isSup()?chip(owner(L.owner)):''}</div><div class="rsub">${childLine(L)} · ${h(L.district)} · ${h(L.source)}</div></div><div class="rdue ${dueCls}">${dueTxt}</div><div class="ract">${act}</div></div>`;
+  const fBtn=L=>`<button class="btn sm primary" data-act="follow" data-id="${L.id}" type="button">记跟进</button>`;
+  const left=m=>{const d=m-nowM;if(d<0)return['已超 '+(Math.floor(-d/60)?Math.floor(-d/60)+' 小时 ':'')+(-d%60)+' 分','bad'];return['还剩 '+Math.floor(d/60)+' 小时 '+(d%60)+' 分',d<180?'warn':'']};
+  return `<div class="ph"><div><div class="eyebrow">${md(TODAY)} ${wk(TODAY)} · ${isSup()?'张敏的团队（3 人）':'王雨'}</div><h1>今日待办</h1></div>
+    <div class="chips">${firstOver?chip('首次跟进超时 '+firstOver,'red'):''}${dueOver?chip('跟进逾期 '+dueOver,'red'):''}${chip('回访 '+T.visit.length,'green')}${chip('机构课 '+T.org.length,'teal')}</div></div>
+  ${merged('<b>客服工作台</b>（今日任务）、<b>老客户回访</b>（到期节点）、<b>客户位置补解析</b>（定位失败提醒）、<b>转单十天未成交</b>提醒，以及开发中的<b>机构课</b>待办，都放在这一页。每一条点进去就是客户页，在客户页里做完。')}
+  ${sec('新客户首次跟进','进线后 12 小时内要完成',T.first,L=>{const[t,c]=left(firstDue(L));return rowLead(L,t+'<br><span class="muted">进线 '+rel(L.created)+'</span>',c,fBtn(L))})}
+  ${sec('到期跟进','按“下次跟进日期”排',T.due,L=>{const k=daysAgo(L.nextDue);return rowLead(L,k>0?'逾期 '+k+' 天':'今天',k>0?'bad':'',fBtn(L))})}
+  ${sec('转单十天未成交','发单 10 天还没成交，要推一下或换老师',T.ten,L=>rowLead(L,'转单 '+daysAgo(L.transferAt)+' 天','bad',`<button class="btn sm" data-open="${L.id}" type="button">去处理</button>`))}
+  ${sec('老客户回访','成交后第 7 / 30 / 90 / 180 / 365 天',T.visit,({D,L,v})=>{const k=daysAgo(v.due);return rowLead(L,'第 '+v.k+' 天回访<br><span class="muted">'+(k?'已到期 '+k+' 天':'今天到期')+'</span>',k>3?'bad':'',`<button class="btn sm primary" data-act="visit" data-did="${D.id}" data-k="${v.k}" type="button">完成回访</button>`)})}
+  ${sec('机构课','今天要消的课、老师代收待确认、快上完要续费',T.org,o=>{
+    if(o.kind==='lesson')return rowLead(o.L,(o.x.date<TODAY?'漏消 '+md(o.x.date):'今天 '+o.G.time.split(' ')[1])+'<br><span class="muted">第 '+(o.G.lessons.indexOf(o.x)+1)+' / '+o.G.total+' 次课</span>',o.x.date<TODAY?'bad':'',`<button class="btn sm primary" data-act="lesson" data-gid="${o.G.id}" data-lid="${o.x.id}" type="button">消课</button>`);
+    if(o.kind==='receipt')return rowLead(o.L,'老师代收 '+yuan(o.r.amount)+'<br><span class="muted">'+md(o.r.date)+' 报的</span>','warn',`<button class="btn sm primary" data-act="receipt" data-gid="${o.G.id}" type="button">确认到账</button>`);
+    return rowLead(o.L,'只剩 '+orgLeft(o.G)+' 次课','warn',`<button class="btn sm" data-act="renew" data-gid="${o.G.id}" type="button">登记续费</button>`)})}
+  ${sec('定位没成功的跟进中客户','定位不成功就找不到附近老师',T.geo,L=>rowLead(L,GEO[L.geo][0],'warn',`<button class="btn sm" data-act="relocate" data-id="${L.id}" type="button">重新定位</button>`))}`};
+
+/* ================= 我的客户 ================= */
+PAGES.customers=()=>{const v=view.cust||(view.cust={tab:'open',q:'',star:false,owner:'',st:''});const all=myLeads();
+  const groups={open:L=>OPEN.includes(L.status)&&!(L.entry==='inventory'&&L.inv==='pending'),deal:L=>L.status==='已成交'||L.status==='成交后退费',inv:L=>L.entry==='inventory'&&L.inv==='pending',lost:L=>L.status==='已流失',all:()=>true};
+  const TABS=[['open','跟进中'],['deal','已成交'],['inv','库存客户'],['lost','已流失'],['all','全部']];
+  let list=all.filter(groups[v.tab]);
+  if(v.q){const q=v.q.trim();list=list.filter(L=>L.parent.includes(q)||L.child.name.includes(q)||L.address.includes(q)||L.phone.slice(-4).includes(q))}
+  if(v.star)list=list.filter(L=>L.starred);if(v.owner)list=list.filter(L=>L.owner===v.owner);if(v.st)list=list.filter(L=>dispStatus(L)===v.st);
+  list.sort((a,b)=>(b.starred-a.starred)||((a.nextDue||'9')<(b.nextDue||'9')?-1:1));
+  const stOpts=['新线索','已联系','已加微信','已报价','转单','转单十天未成交','已成交','成交后退费','已流失'];
+  const rowf=L=>{const D=leadDeal(L);let due='';if(v.tab==='inv')due='原始获客 '+(L.origin||'').slice(0,7);else if(OPEN.includes(L.status)&&L.nextDue)due=(L.nextDue<TODAY?'<span class="rdue bad">逾期 '+daysAgo(L.nextDue)+' 天</span>':L.nextDue===TODAY?'今天跟进':'下次 '+md(L.nextDue));else if(D)due='成交 '+md(D.date)+(D.kind==='org'?' · 机构课':' · '+yuan(D.fee));
+    const last=L.follow.length?L.follow[L.follow.length-1]:null;
+    return `<div class="row click" data-open="${L.id}"><button class="star ${L.starred?'on':''}" data-act="star" data-id="${L.id}" type="button" aria-label="重点客户">★</button><div class="rmain"><div class="rtitle">${h(L.parent)} ${statusChip(L)} ${geoChip(L)} ${isSup()?chip(owner(L.owner)):''}</div><div class="rsub">${childLine(L)} · ${h(L.district)} · ${h(L.source)}${v.tab==='inv'?' · '+h(L.history):last?' · 最近：'+h(last.text):''}</div></div><div class="rdue">${due}</div>${v.tab==='inv'?`<div class="ract"><button class="btn sm primary" data-act="activate" data-id="${L.id}" type="button">激活</button></div>`:''}</div>`};
+  return `<div class="ph"><div><div class="eyebrow">${isSup()?'团队 3 人的客户池':'只看到分给我的客户'}</div><h1>${isSup()?'辖区客户':'我的客户'}</h1></div><div class="btns"><button class="btn primary" data-act="newLead" type="button">新增客户</button></div></div>
+  ${merged('<b>我的线索</b>、<b>学生档案</b>（放进客户页）、<b>成交与退费</b>（在客户页里记）、<b>库存客户激活</b>。客户页里还能直接做定位、找附近老师、推送、试课、成交、退费、回访。')}
+  <div class="tabs" role="tablist">${TABS.map(([k,l])=>`<button class="tab" role="tab" type="button" data-ctab="${k}" aria-selected="${v.tab===k}">${l}<span class="c">${all.filter(groups[k]).length}</span></button>`).join('')}</div>
+  <div class="filters"><div class="fld"><label for="cq">搜索</label><input id="cq" type="search" placeholder="家长、孩子、小区、手机尾号" value="${h(v.q)}"></div>
+    <div class="fld"><label for="cst">状态</label><select id="cst"><option value="">全部状态</option>${stOpts.map(s=>`<option ${v.st===s?'selected':''}>${s}</option>`).join('')}</select></div>
+    ${isSup()?`<div class="fld"><label for="cown">负责人</label><select id="cown"><option value="">全部</option>${TEAM.map(u=>`<option value="${u}" ${v.owner===u?'selected':''}>${owner(u)}</option>`).join('')}</select></div>`:''}
+    <label class="checks" style="height:40px;align-items:center"><span><input type="checkbox" id="cstar" ${v.star?'checked':''}> 只看重点客户 ★</span></label></div>
+  ${v.tab==='inv'?'<p class="note">库存客户是以前导入的老资料，<b>没激活前不算新增客户</b>。激活后算作今天的新客户，进入 12 小时首次跟进。</p>':''}
+  <section class="card">${list.length?`<div>${list.slice(0,80).map(rowf).join('')}</div>`:empty('没有符合条件的客户')}${list.length>80?'<p class="hint">只显示前 80 个，请用搜索缩小范围</p>':''}</section>`};
+
+/* ================= 客户页 ================= */
+PAGES.cust=id=>{const L=LBY(id);if(!L)return empty('客户不存在');const D=leadDeal(L);const st=dispStatus(L);
+  const orders=S.orders.filter(o=>o.leadId===L.id);const O=orders.find(o=>o.status==='进行中')||orders[orders.length-1];
+  const near=nearTeachers(L),parents=nearParents(L,L.id);const pushed=new Set(O?O.pushes.map(p=>p.tid):[]);
+  const G=D?S.orgs.find(g=>g.dealId===D.id):null;const inv=L.entry==='inventory'&&L.inv==='pending';
+  const cnt=(arr,r)=>arr.filter(x=>x.d<=r).length;
+  const actions=inv?`<button class="btn primary" data-act="activate" data-id="${L.id}" type="button">激活这个库存客户</button>`:[
+    `<button class="btn primary" data-act="follow" data-id="${L.id}" type="button">记跟进</button>`,
+    OPEN.includes(L.status)?`<button class="btn" data-act="deal" data-id="${L.id}" type="button">记成交</button>`:'',
+    D&&!D.refund&&D.kind==='info'?`<button class="btn" data-act="refund" data-did="${D.id}" type="button">记退费</button>`:'',
+    OPEN.includes(L.status)?`<button class="btn danger" data-act="lost" data-id="${L.id}" type="button">标记流失</button>`:''].join('');
+  const tl=[...L.follow].reverse();
+  return `<button class="back" data-act="back" type="button">← 返回</button>
+  <div class="ph"><div><div class="eyebrow">客户 · ${h(L.city)} · ${h(L.source)} · 进线 ${md(L.created)}</div><h1><button class="star ${L.starred?'on':''}" data-act="star" data-id="${L.id}" type="button" aria-label="重点客户" style="font-size:24px">★</button>${h(L.parent)} <span style="font-size:16px">${statusChip(L)}</span></h1></div><div class="btns">${actions}</div></div>
+  <div class="grid2"><div class="stack">
+    <section class="card"><div class="cardhead"><h2>家长和孩子</h2><span class="muted">负责人 ${owner(L.owner)} · 企微 ${h(L.wecom)}</span></div>
+      <dl class="kv"><dt>手机</dt><dd>${h(L.phone)}</dd><dt>孩子</dt><dd>${h(L.child.name)} · ${h(L.child.grade)} · ${h(L.child.school)}</dd><dt>要补的</dt><dd>${h(L.subject)}${L.quote?' · 报价 '+yuan(L.quote)+'/小时':''}</dd><dt>上课地址</dt><dd>${h(L.address)}</dd>
+      ${L.nextDue&&OPEN.includes(L.status)?`<dt>下次跟进</dt><dd>${L.nextDue<TODAY?'<span class="rdue bad">'+md(L.nextDue)+'（逾期）</span>':md(L.nextDue)}</dd>`:''}
+      ${L.entry==='inventory'?`<dt>库存资料</dt><dd>${h(L.history)}（原始获客 ${h(L.origin)}）</dd>`:''}${L.lostReason?`<dt>流失原因</dt><dd>${h(L.lostReason)}</dd>`:''}</dl>
+      ${isSup()?`<div class="filters"><div class="fld"><label for="reown">换负责人（离职交接也用这个）</label><select id="reown" data-id="${L.id}">${TEAM.map(u=>`<option value="${u}" ${L.owner===u?'selected':''}>${owner(u)}</option>`).join('')}</select></div></div>`:''}
+      <p class="hint">学生档案（学校、年级变化、成绩）归在孩子名下，不再单独一个菜单。</p></section>
+    ${D?`<section class="card"><div class="cardhead"><h2>成交与回访</h2><span class="muted">记录人 ${owner(D.by)} · ${rel(D.at)}</span></div>
+      <dl class="kv"><dt>类型</dt><dd>${D.kind==='org'?chip('机构课','teal'):chip('信息费单','blue')}</dd><dt>老师</dt><dd><button class="link" data-topen="${D.teacherId}" type="button">${h(TBY(D.teacherId).name)}</button></dd>
+      ${D.kind==='info'?`<dt>信息费</dt><dd>${yuan(D.fee)}（课时费 ${yuan(D.hourly)}/小时，每周 ${D.weekly} 次）</dd>`:`<dt>机构课</dt><dd>${G?`每次 ${yuan(G.price)}，已上 ${orgUsed(G)} / ${G.total} 次 · <button class="link" data-act="orgDetail" data-gid="${G.id}" type="button">看课表</button>`:''}</dd>`}
+      <dt>成交日期</dt><dd>${md(D.date)}</dd>${D.refund?`<dt>退费</dt><dd><span class="rdue bad">${yuan(D.refund.amount)}</span> · ${md(D.refund.date)} · ${h(D.refund.side)} · ${h(D.refund.reason)} <span class="who">（${owner(D.refund.by)} 记）</span></dd>`:''}</dl>
+      <div class="nodes">${D.visits.map(v=>{const c=v.done?'done':v.cancelled?'cancel':v.due<=TODAY?'due':'';return `<button class="node ${c}" type="button" ${c==='due'?`data-act="visit" data-did="${D.id}" data-k="${v.k}"`:'disabled'}><b>第 ${v.k} 天</b>${v.done?'已回访 · '+h(v.result):v.cancelled?'退费后取消':v.due<=TODAY?'待回访':md(v.due)}</button>`}).join('')}</div>
+      <p class="hint">回访要单独记，不能用普通跟进代替；退费后，之后的回访节点自动取消。</p></section>`:''}
+    <section class="card"><div class="cardhead"><h2>跟进记录</h2><span class="muted">每条都记谁、什么时候</span></div>
+      ${inv?'':`<div class="qf"><textarea id="qtext" placeholder="快速记一句，例如：家长说周末再定"></textarea><button class="btn primary" data-act="quickFollow" data-id="${L.id}" type="button">保存</button></div>`}
+      ${tl.length?`<div class="timeline">${tl.map(f=>`<div class="ti"><div class="d">${rel(f.at)}</div><div><div class="chips">${chip(f.status,STATUS_CLS[f.status])}<span class="who">${owner(f.by)}</span></div><p>${h(f.text)}</p></div></div>`).join('')}</div>`:empty(inv?'激活后开始跟进':'还没有跟进记录。新客户要在 12 小时内完成首次跟进')}</section>
+  </div><div class="stack">
+    <section class="card"><div class="cardhead"><h2>位置</h2>${chip(GEO[L.geo][0],GEO[L.geo][1])}</div>
+      <p class="hint">${h(L.address)}</p>
+      ${hasLoc(L)?`<div class="dist3"><div><b>${cnt(near,1)}</b><span>1 公里内老师</span></div><div><b>${cnt(near,3)}</b><span>3 公里内</span></div><div><b>${near.length}</b><span>5 公里内</span></div></div>`:'<p class="err">还没定位成功，附近老师和派单都用不了。</p>'}
+      <div class="btns"><button class="btn sm" data-act="relocate" data-id="${L.id}" type="button">${hasLoc(L)?'修改地址 / 重新定位':'重新定位'}</button><button class="btn sm" data-act="mapAt" data-id="${L.id}" type="button">在地图上看</button></div></section>
+    ${inv?'':`<section class="card"><div class="cardhead"><h2>派单进度</h2><span class="muted">${O?'订单 '+md(O.created)+' · '+owner(O.by)+' 发起':''}</span></div>
+      ${O&&O.pushes.length?`<div class="tw"><table class="t"><thead><tr><th>老师</th><th>推送</th><th>进度</th></tr></thead><tbody>${O.pushes.map((p,i)=>{const t=TBY(p.tid);return `<tr><td><button class="link" data-topen="${t.id}" type="button">${h(t.name)}</button><div class="who">${h(t.type)}</div></td><td>${rel(p.at)}<div class="who">${owner(p.by)}</div></td><td><select data-stage="${O.id}" data-i="${i}" aria-label="推送进度">${PUSH_STAGES.map(s=>`<option ${p.stage===s?'selected':''}>${s}</option>`).join('')}</select>${p.stage==='试课成功'&&OPEN.includes(L.status)?` <button class="btn sm good" data-act="deal" data-id="${L.id}" data-tid="${t.id}" type="button">记成交</button>`:''}</td></tr>`}).join('')}</tbody></table></div>`:empty(hasLoc(L)?'还没推送老师。在下面“附近老师”里点“推送”，系统自动生成订单并记下推送人和时间。':'先定位成功才能派单')}
+      ${O&&O.status==='进行中'&&L.status==='转单'?`<p class="hint">已转单 ${daysAgo(L.transferAt)} 天${daysAgo(L.transferAt)>=10?'，超过 10 天了':''}。</p>`:''}</section>
+    <section class="card"><div class="cardhead"><h2>附近老师</h2><span class="muted">5 公里内，先按匹配程度再按距离</span></div>
+      ${near.length?`<div>${near.slice(0,8).map(x=>{const s=tStats(x.t);return `<div class="row"><div class="rmain"><div class="rtitle"><button class="link" data-topen="${x.t.id}" type="button">${h(x.t.name)}</button> ${x.t.focus?chip('★ 特别关注','violet'):''}${s.best?chip('优质','teal'):''}${chip(TIER[x.tier],x.tier===1?'green':x.tier===2?'blue':'')}</div><div class="rsub">${x.d.toFixed(1)} 公里 · ${h(x.t.type)} · ${x.t.levels.join('/')} · ${x.t.subjects.join('、')}${s.count?' · 接过 '+s.count+' 单':''}</div></div><div class="ract">${pushed.has(x.t.id)?chip('已推送','blue'):OPEN.includes(L.status)?`<button class="btn sm primary" data-act="push" data-id="${L.id}" data-tid="${x.t.id}" type="button">推送</button>`:''}</div></div>`}).join('')}</div>`:empty(hasLoc(L)?'5 公里内没有可接单的老师':'定位成功后显示')}</section>
+    <section class="card"><div class="cardhead"><h2>附近家长</h2><span class="muted">5 公里内 ${parents.length} 位，可以拼老师、做转介绍</span></div>
+      ${parents.length?`<div>${parents.slice(0,5).map(x=>`<div class="row click" data-open="${x.L.id}"><div class="rmain"><div class="rtitle">${h(x.L.parent)} ${statusChip(x.L)}</div><div class="rsub">${x.d.toFixed(1)} 公里 · ${childLine(x.L)}</div></div></div>`).join('')}</div>`:empty('附近没有其他家长')}</section>`}
+  </div></div>`};
+
+/* ================= 派单 ================= */
+PAGES.orders=()=>{const leads=new Set(myLeads().map(L=>L.id));const list=S.orders.filter(o=>o.status==='进行中'&&(o.leadId?leads.has(o.leadId):myCities().includes(o.city)));
+  const col=o=>{if(!o.pushes.length)return 0;if(o.pushes.some(p=>p.stage==='试课成功'))return 3;if(o.pushes.some(p=>p.stage==='约好试课'))return 2;return 1};
+  const C=[[],[],[],[]];list.forEach(o=>C[col(o)].push(o));
+  const COLS=['待推送','已推送，等老师回复','约好试课','试课成功，待记成交'];
+  const card=o=>{const L=o.leadId?LBY(o.leadId):null;const k=L&&L.transferAt?daysAgo(L.transferAt):daysAgo(o.created);return `<button class="ocard" type="button" data-act="orderDetail" data-oid="${o.id}"><b>${L?h(L.parent):'群里接的单'} · ${h(o.grade)} ${h(o.subjects.join('、'))}</b><span class="rsub">${h(o.district||o.address)}${o.pay?' · '+yuan(o.pay)+'/小时':''}</span><span class="chips">${o.pushes.length?chip('推了 '+o.pushes.length+' 位','blue'):''}${k>=10?chip('已 '+k+' 天','red'):chip(k+' 天','')}${!o.x?chip('未定位','red'):''}</span></button>`};
+  return `<div class="ph"><div><div class="eyebrow">订单 → 匹配 → 推送 → 试课 → 成交</div><h1>派单</h1></div><div class="btns"><button class="btn" data-act="pasteOrder" type="button">粘贴订单文字</button></div></div>
+  ${merged('<b>派单工具</b>整套保留。改动是：推送、老师回复、约试课、试课结果都是<b>点一下就记下</b>，并自动记推送人和时间（现在 90 天只有 2 条推送记录，订单 117 条没有记录是谁建的）。从客户页推送也会出现在这里。')}
+  <div class="kanban">${C.map((arr,i)=>`<div class="col"><h3><span>${COLS[i]}</span><span class="muted">${arr.length}</span></h3>${arr.map(card).join('')||'<p class="hint">没有</p>'}</div>`).join('')}</div>`};
+
+/* ================= 老师 ================= */
+PAGES.teachers=()=>{const v=view.t||(view.t={tab:'manage',cat:'all',q:'',sort:'default',q2:'',geo:''});
+  const mine=S.teachers.filter(t=>myCities().includes(t.city));
+  const TABS=[['manage','老师经营'],['all','全部老师'],['add','录入老师']];
+  let body='';
+  if(v.tab==='manage'){const dealt=mine.map(t=>({t,s:tStats(t)})).filter(x=>x.s.dealt);
+    const CATS=[['all','全部','全部成交老师',x=>true,''],['focus','★ 特别关注','人工维护关注<br>仅客服/主管手动',x=>x.t.focus,'c-focus'],['geo','定位成功','任一地点精准定位',x=>x.t.geo==='success','c-geo'],['nogeo','定位失败','尚未完成精准定位',x=>x.t.geo!=='success','c-nogeo'],['best','优质老师','成交≥2次或实收≥1000元',x=>x.s.best,'c-best'],
+      ...['A','B','C','D','E'].map(b=>[b,b,BAND_DESC[b],x=>x.s.band===b,'c-'+b])];
+    const cur=CATS.find(c=>c[0]===v.cat)||CATS[0];let list=dealt.filter(cur[3]);
+    if(v.q)list=list.filter(x=>x.t.name.includes(v.q.trim()));
+    const SORTS={default:(a,b)=>(b.t.focus-a.t.focus)||((a.s.last||'')<(b.s.last||'')?1:-1),last:(a,b)=>(a.s.last||'')<(b.s.last||'')?1:-1,count:(a,b)=>b.s.count-a.s.count,fee:(a,b)=>b.s.fee-a.s.fee};
+    list.sort(SORTS[v.sort]);
+    body=`<p class="note">按最近一次接单分 A–E（自然月）。紫色星标是人工特别关注；优质老师按有效成交次数和扣退费后的金额实时判定，退费不抹掉成交次数。</p>
+    <div class="cats">${CATS.map(c=>`<button class="cat ${c[4]}" type="button" data-tcat="${c[0]}" aria-pressed="${v.cat===c[0]}"><b>${c[1]}</b><span class="v">${dealt.filter(c[3]).length} 人</span><span class="s">${c[2]}</span></button>`).join('')}</div>
+    <section class="card"><div class="cardhead"><h2>老师列表 <span class="muted">${list.length} 位</span></h2><div class="filters"><div class="fld"><label for="tq">搜索</label><input id="tq" type="search" placeholder="姓名" value="${h(v.q)}"></div><div class="fld"><label for="tsort">排序</label><select id="tsort">${[['default','默认（关注优先）'],['last','最近成交'],['count','接单次数'],['fee','累计信息费']].map(([k,l])=>`<option value="${k}" ${v.sort===k?'selected':''}>${l}</option>`).join('')}</select></div></div></div>
+    <div class="tw"><table class="t"><thead><tr><th>姓名 / 分类</th><th>年级科目</th><th class="n">接单</th><th class="n">累计信息费</th><th class="n">距最近成交</th><th>快捷跟进</th></tr></thead><tbody>
+    ${list.slice(0,60).map(({t,s})=>{const ln=t.notes[t.notes.length-1];return `<tr><td><div class="chips"><button class="link" data-topen="${t.id}" type="button"><b>${h(t.name)}</b></button><button class="btn sm" data-act="tfocus" data-tid="${t.id}" type="button" style="height:24px">${t.focus?'★ 已关注':'☆ 关注'}</button></div><div class="who">${s.band}类 · ${BAND_DESC[s.band]}${s.best?' · 优质老师':''} · ${t.geo==='success'?'已精准定位':'未精准定位'}</div></td>
+      <td>${t.levels.join('、')}<div class="who">${t.subjects.join('、')}</div></td><td class="n">${s.count} 次</td><td class="n">${yuan(s.fee)}</td><td class="n">${daysAgo(s.last)} 天</td>
+      <td><div class="qf"><textarea id="tn-${t.id}" placeholder="记录沟通内容…" aria-label="快捷跟进"></textarea><button class="btn sm primary" data-act="tnote" data-tid="${t.id}" type="button">保存</button></div>${ln?`<div class="who">${owner(ln.by)} ${rel(ln.at)}：${h(ln.text)}</div>`:''}</td></tr>`}).join('')}</tbody></table></div></section>`;
+  }else if(v.tab==='all'){let list=mine;if(v.q2)list=list.filter(t=>t.name.includes(v.q2.trim())||t.address.includes(v.q2.trim()));if(v.geo)list=list.filter(t=>v.geo==='ok'?hasLoc(t):!hasLoc(t));
+    body=`<div class="filters"><div class="fld"><label for="tq2">搜索</label><input id="tq2" type="search" placeholder="姓名、地址" value="${h(v.q2)}"></div><div class="fld"><label for="tgeo">定位</label><select id="tgeo"><option value="">全部</option><option value="ok" ${v.geo==='ok'?'selected':''}>有位置</option><option value="no" ${v.geo==='no'?'selected':''}>定位失败</option></select></div></div>
+    <section class="card"><div class="cardhead"><h2>${list.length} 位老师</h2><span class="muted">${myCities().join('、')}</span></div><div>${list.slice(0,60).map(t=>`<div class="row click" data-topen="${t.id}"><div class="rmain"><div class="rtitle">${h(t.name)} ${geoChip(t)} ${t.status!=='可接单'?chip(t.status,'orange'):''}</div><div class="rsub">${h(t.type)} · ${t.levels.join('/')} · ${t.subjects.join('、')} · ${h(t.address)}</div></div><div class="rdue">录入 ${md(t.entered)}<div class="who">${h(t.enteredBy)}</div></div></div>`).join('')}</div></section>`;
+  }else{body=`<section class="card"><form class="form" id="tform"><h2>录入老师</h2><p class="hint">保留现在的“粘贴一段话自动识别”。这里演示手动录入，保存后自动定位，并记下录入人。</p>
+    <div class="two"><div class="fld"><label for="tf-n">姓名</label><input id="tf-n" name="n" type="text" required></div><div class="fld"><label for="tf-p">手机</label><input id="tf-p" name="p" type="tel" required></div></div>
+    <div class="two"><div class="fld"><label for="tf-ty">类型</label><select id="tf-ty" name="ty"><option>在校大学生</option><option>研究生</option><option>在职老师</option><option>专职家教</option></select></div><div class="fld"><label for="tf-c">城市</label><select id="tf-c" name="c">${myCities().map(c=>`<option>${c}</option>`).join('')}</select></div></div>
+    <div class="fld"><span class="lb">学段</span><div class="checks">${LEVELS.map(l=>`<label><input type="checkbox" name="lv" value="${l}">${l}</label>`).join('')}</div></div>
+    <div class="fld"><span class="lb">科目</span><div class="checks">${SUBJ.map(l=>`<label><input type="checkbox" name="sj" value="${l}">${l}</label>`).join('')}</div></div>
+    <div class="fld"><label for="tf-a">住址或常去的地方（用来算距离）</label><input id="tf-a" name="a" type="text" placeholder="例如：涪城区 西南科技大学东区"></div>
+    <p class="err" id="tf-err" hidden></p><div class="foot"><button class="btn primary" type="submit">保存老师</button></div></form></section>`}
+  return `<div class="ph"><div><div class="eyebrow">${myCities().join('、')}</div><h1>老师</h1></div></div>
+  ${merged('<b>老师经营</b>（分类和快捷跟进原样保留）、<b>老师地图</b>（并入“地图”）、<b>老师录入</b>、<b>老师资料库</b>（“全部老师”）。老师页里还能看<b>附近订单</b>并直接推送。')}
+  <div class="tabs" role="tablist">${TABS.map(([k,l])=>`<button class="tab" role="tab" type="button" data-ttab="${k}" aria-selected="${v.tab===k}">${l}</button>`).join('')}</div>${body}`};
+
+PAGES.teacher=id=>{const t=TBY(id);if(!t)return empty('老师不存在');const s=tStats(t);
+  const ords=hasLoc(t)?S.orders.filter(o=>o.status==='进行中'&&o.city===t.city&&o.x!=null).map(o=>({o,d:dist(o,t)})).filter(x=>x.d<=5).sort((a,b)=>a.d-b.d):[];
+  const deals=S.deals.filter(d=>d.teacherId===t.id);
+  return `<button class="back" data-act="back" type="button">← 返回</button>
+  <div class="ph"><div><div class="eyebrow">老师 · ${h(t.city)} · ${h(t.type)}</div><h1>${h(t.name)}</h1></div><div class="btns"><button class="btn" data-act="tfocus" data-tid="${t.id}" type="button">${t.focus?'★ 取消特别关注':'☆ 特别关注'}</button></div></div>
+  <div class="grid2"><div class="stack"><section class="card"><h2>资料</h2><dl class="kv"><dt>手机</dt><dd>${h(t.phone)}</dd><dt>学段</dt><dd>${t.levels.join('、')}</dd><dt>科目</dt><dd>${t.subjects.join('、')}</dd><dt>地址</dt><dd>${h(t.address)} ${geoChip(t)}</dd><dt>状态</dt><dd>${h(t.status)}</dd><dt>分类</dt><dd>${s.dealt?`${s.band}类（${BAND_DESC[s.band]}）· 接单 ${s.count} 次 · ${yuan(s.fee)}${s.best?' · 优质老师':''}`:'还没成交过'}</dd><dt>录入</dt><dd>${md(t.entered)} · ${h(t.enteredBy)}</dd></dl></section>
+  <section class="card"><div class="cardhead"><h2>合作和沟通记录</h2></div><div class="qf"><textarea id="tn-${t.id}" placeholder="记录沟通内容…"></textarea><button class="btn primary" data-act="tnote" data-tid="${t.id}" type="button">保存</button></div>
+  <div class="timeline">${[...t.notes].reverse().map(n=>`<div class="ti"><div class="d">${rel(n.at)}</div><div><span class="who">${owner(n.by)}</span><p>${h(n.text)}</p></div></div>`).join('')}${deals.map(d=>{const L=LBY(d.leadId);return `<div class="ti"><div class="d">${md(d.date)}</div><div>${chip(d.kind==='org'?'机构课':'成交','green')} <button class="link" data-open="${L.id}" type="button">${h(L.parent)}</button> · ${childLine(L)}${d.refund?' · '+chip('退费 '+yuan(d.refund.amount),'red'):''}</div></div>`}).join('')}</div>
+  ${!t.notes.length&&!deals.length?empty('还没有记录'):''}</section></div>
+  <div class="stack"><section class="card"><div class="cardhead"><h2>附近订单</h2><span class="muted">5 公里内还没成交的</span></div>${!hasLoc(t)?'<p class="err">老师还没定位成功，算不出附近订单。</p>':ords.length?`<div>${ords.map(({o,d})=>{const L=o.leadId?LBY(o.leadId):null;const done=o.pushes.some(p=>p.tid===t.id);return `<div class="row"><div class="rmain"><div class="rtitle">${L?h(L.parent):'群里接的单'} · ${h(o.grade)} ${h(o.subjects.join('、'))}</div><div class="rsub">${d.toFixed(1)} 公里 · ${h(o.district)} · 已推 ${o.pushes.length} 位</div></div><div class="ract">${done?chip('已推送','blue'):`<button class="btn sm primary" data-act="pushOrder" data-oid="${o.id}" data-tid="${t.id}" type="button">推给 TA</button>`}</div></div>`}).join('')}</div>`:empty('5 公里内暂时没有待派的订单')}</section></div></div>`};
+
+/* ================= 机构课 ================= */
+PAGES.org=()=>{const leads=new Set(myLeads().map(L=>L.id));const list=S.orgs.filter(g=>leads.has(g.leadId));
+  const todayL=[];list.forEach(G=>G.lessons.forEach(x=>{if(x.date===TODAY)todayL.push({G,x})}));
+  const pend=list.flatMap(G=>G.receipts.filter(r=>r.status==='待确认'));
+  return `<div class="ph"><div><div class="eyebrow">开发中的新功能 · 按次收费、消课、老师结算</div><h1>机构课</h1></div></div>
+  <p class="note">这是开发中的<b>机构订单</b>（现在在 ruixing-org-dev 里，做到第 2a 批，正式系统还没上线）。和信息费单不同：按课次收费、要消课、有老师结算和续费。演示里它<b>不单独成一套流程</b>：客户页“记成交”时选“机构课”就会生成课表，之后的消课、到账、续费都进今日待办。</p>
+  <div class="kpis"><div class="kpi"><span class="l">进行中</span><span class="v">${list.filter(g=>g.status==='进行中').length}</span><span class="s">个学生</span></div><div class="kpi"><span class="l">今天的课</span><span class="v">${todayL.length}</span><span class="s">节</span></div><div class="kpi"><span class="l">老师代收待确认</span><span class="v">${pend.length}</span><span class="s">${yuan(sum(pend,r=>r.amount))}</span></div><div class="kpi"><span class="l">快上完要续费</span><span class="v">${list.filter(g=>orgLeft(g)<=2).length}</span><span class="s">剩 2 次以内</span></div></div>
+  <section class="card"><h2>全部机构课</h2>${list.length?`<div class="tw"><table class="t"><thead><tr><th>学生</th><th>老师</th><th>上课时间</th><th>进度</th><th class="n">每次收费</th><th class="n">老师每次</th><th>收款</th><th>结算</th></tr></thead><tbody>${list.map(G=>{const L=LBY(G.leadId);return `<tr class="click" data-act="orgDetail" data-gid="${G.id}"><td>${h(L.child.name)}<div class="who">${h(L.parent)} · ${h(L.child.grade)}</div></td><td>${h(TBY(G.teacherId).name)}</td><td>${h(G.time)}</td><td><div class="prog"><i style="width:${orgUsed(G)/G.total*100}%"></i></div><div class="who">${orgUsed(G)} / ${G.total} 次</div></td><td class="n">${yuan(G.price)}</td><td class="n">${yuan(G.teacherPay)}</td><td>${G.pay==='company'?'公司收':'老师代收'}</td><td>${{weekly:'按周',monthly:'按月',per_lesson:'每次课'}[G.settle]}</td></tr>`}).join('')}</tbody></table></div>`:empty('还没有机构课')}</section>`};
+
+/* ================= 地图 ================= */
+PAGES.map=()=>{const v=view.map||(view.map={city:myCities()[0],c:true,t:true,o:true,sel:null});
+  const cs=S.leads.filter(L=>L.city===v.city&&L.x!=null&&(isSup()?TEAM.includes(L.owner):L.owner===me().id)&&L.entry==='standard');
+  const ts=S.teachers.filter(t=>t.city===v.city&&hasLoc(t));const os=S.orders.filter(o=>o.city===v.city&&o.status==='进行中'&&o.x!=null);
+  const K=10,dot=(o,c,k,id)=>`<circle class="dot" cx="${(o.x*K).toFixed(1)}" cy="${(o.y*K).toFixed(1)}" r="${k==='o'?3.2:2.4}" fill="${c}" stroke="var(--surface)" stroke-width=".8" data-sel="${k}:${id}" tabindex="0"><title>${k==='c'?'家长':k==='t'?'老师':'订单'}</title></circle>`;
+  let panel='<p class="hint">点地图上的点，看详情和 3 公里内的老师、家长、订单。</p>';
+  if(v.sel){const[k,id]=v.sel.split(':');const o=k==='c'?LBY(id):k==='t'?TBY(id):OBY(id);if(o){
+    const n3=a=>a.filter(x=>x!==o&&dist(x,o)<=3).length;
+    panel=`<h3>${k==='c'?'家长 '+h(o.parent):k==='t'?'老师 '+h(o.name):'订单 '+h(o.grade)+' '+h(o.subjects.join('、'))}</h3><p class="hint">${h(o.address||o.district)}</p><div class="dist3"><div><b>${n3(ts)}</b><span>3 公里内老师</span></div><div><b>${n3(cs)}</b><span>家长</span></div><div><b>${n3(os)}</b><span>待派订单</span></div></div>
+    <div class="btns">${k==='c'?`<button class="btn sm primary" data-open="${o.id}" type="button">打开客户页</button>`:k==='t'?`<button class="btn sm primary" data-topen="${o.id}" type="button">打开老师页</button>`:`<button class="btn sm primary" data-act="orderDetail" data-oid="${o.id}" type="button">打开订单</button>`}</div>`}}
+  return `<div class="ph"><div><div class="eyebrow">家长、老师、订单在同一张图上</div><h1>地图</h1></div>${myCities().length>1?`<div class="seg">${myCities().map(c=>`<button type="button" data-mcity="${c}" aria-pressed="${v.city===c}">${c}</button>`).join('')}</div>`:''}</div>
+  ${merged('<b>客户地图</b>和<b>老师地图</b>合成一张。<b>客户位置补解析</b>不再是单独页面：定位失败的客户会出现在今日待办，在客户页里点“重新定位”。')}
+  <div class="legend"><label><input type="checkbox" data-mlayer="c" ${v.c?'checked':''}><span class="sw" style="background:var(--accent)"></span>家长 ${cs.length}</label><label><input type="checkbox" data-mlayer="t" ${v.t?'checked':''}><span class="sw" style="background:var(--good)"></span>老师 ${ts.length}</label><label><input type="checkbox" data-mlayer="o" ${v.o?'checked':''}><span class="sw" style="background:var(--warn)"></span>待派订单 ${os.length}</label></div>
+  <div class="grid2"><div class="mapbox"><svg viewBox="0 0 200 140" role="img" aria-label="${v.city}地图">
+    <rect width="200" height="140" fill="var(--map-land)"/><path d="M0 70 Q60 60 100 72 T200 66" stroke="var(--map-road)" stroke-width="5" fill="none"/><path d="M90 0 Q96 60 86 140" stroke="var(--map-road)" stroke-width="4" fill="none"/><path d="M20 130 L180 20" stroke="var(--map-road)" stroke-width="3" fill="none"/>
+    ${CITY_D[v.city].map(d=>`<text x="${d[1]*K}" y="${d[2]*K-12}" font-size="6" fill="var(--muted)" text-anchor="middle">${d[0]}</text>`).join('')}
+    ${v.t?ts.map(t=>dot(t,'var(--good)','t',t.id)).join(''):''}${v.c?cs.map(L=>dot(L,'var(--accent)','c',L.id)).join(''):''}${v.o?os.map(o=>dot(o,'var(--warn)','o',o.id)).join(''):''}
+    ${v.sel?(()=>{const[k,id]=v.sel.split(':');const o=k==='c'?LBY(id):k==='t'?TBY(id):OBY(id);return o&&o.x!=null?`<circle cx="${o.x*K}" cy="${o.y*K}" r="30" fill="none" stroke="var(--fg)" stroke-dasharray="2 2" stroke-width=".7"/>`:''})():''}
+  </svg></div><section class="card">${panel}<p class="hint">虚线圈是 3 公里。正式版用高德地图。</p></section></div>`};
+
+/* ================= 我的数据 ================= */
+function stats(uids){const mon=TODAY.slice(0,7);const leads=S.leads.filter(L=>uids.includes(L.owner));
+  const nw=leads.filter(L=>isLive(L)&&L.created.startsWith(mon));
+  const withF=nw.filter(L=>L.follow.length);const ontime=withF.filter(L=>tmin(L.follow[0].at)<=firstDue(L)).length;
+  const fl=leads.flatMap(L=>L.follow).filter(f=>uids.includes(f.by)&&f.at.startsWith(mon)).length;
+  const pushes=S.orders.flatMap(o=>o.pushes).filter(p=>uids.includes(p.by)&&p.at.startsWith(mon)).length;
+  const ds=S.deals.filter(d=>uids.includes(d.by)&&d.date.startsWith(mon));const fee=sum(ds,d=>d.fee);
+  const rf=S.deals.filter(d=>uids.includes(d.by)&&d.refund&&d.refund.date.startsWith(mon));const rfa=sum(rf,d=>d.refund.amount);
+  const vs=S.deals.filter(d=>uids.includes(LBY(d.leadId).owner)).flatMap(d=>d.visits).filter(v=>v.due.startsWith(mon)&&v.due<=TODAY&&!v.cancelled);const vd=vs.filter(v=>v.done).length;
+  return{nw:nw.length,ontime,withF:withF.length,fl,pushes,deals:ds.length,fee,rf:rf.length,rfa,vs:vs.length,vd}}
+PAGES.mine=()=>{const s=stats([me().id]);const L=S.log.filter(x=>x.by===me().id).slice(-20).reverse();
+  return `<div class="ph"><div><div class="eyebrow">10 月 1 日至今 · 系统根据你的操作自动算，不用写日报</div><h1>我的数据</h1></div></div>
+  ${merged('<b>我的业绩</b>和<b>我的日报</b>。客服不用再写日报：每一个动作系统都记了“谁、什么时候”，数字直接算出来。')}
+  <div class="kpis"><div class="kpi"><span class="l">新客户</span><span class="v">${s.nw}</span><span class="s">含激活的库存客户</span></div><div class="kpi"><span class="l">12 小时内首次跟进</span><span class="v">${pct(s.ontime,s.withF)}</span><span class="s">${s.ontime} / ${s.withF}</span></div><div class="kpi"><span class="l">跟进次数</span><span class="v">${s.fl}</span></div><div class="kpi"><span class="l">推送老师</span><span class="v">${s.pushes}</span><span class="s">次</span></div><div class="kpi"><span class="l">成交</span><span class="v">${s.deals}</span><span class="s">信息费 ${yuan(s.fee)}</span></div><div class="kpi"><span class="l">退费</span><span class="v">${s.rf}</span><span class="s">${yuan(s.rfa)}</span></div><div class="kpi"><span class="l">净营收</span><span class="v">${yuan(s.fee-s.rfa)}</span></div><div class="kpi"><span class="l">回访完成率</span><span class="v">${pct(s.vd,s.vs)}</span><span class="s">${s.vd} / ${s.vs} 个到期节点</span></div></div>
+  <section class="card"><div class="cardhead"><h2>我今天在演示里做的操作</h2><span class="muted">正式系统里每条都存下来，主管和行政能查</span></div>${L.length?`<div class="timeline">${L.map(x=>`<div class="ti"><div class="d">${x.at.slice(11)}</div><div>${chip(x.type)} ${h(x.text)}</div></div>`).join('')}</div>`:empty('去今日待办做几个操作，这里会一条条记下来')}</section>`};
+
+/* ================= 团队（主管） ================= */
+PAGES.team=()=>{const rows=TEAM.map(u=>{
+  const leads=S.leads.filter(L=>L.owner===u);const first=leads.filter(L=>L.status==='新线索'&&isLive(L)&&!L.follow.length);
+  const due=leads.filter(L=>OPEN.includes(L.status)&&L.nextDue&&L.nextDue<TODAY&&!(L.entry==='inventory'&&L.inv==='pending'));
+  const visits=S.deals.filter(d=>LBY(d.leadId).owner===u).flatMap(d=>d.visits).filter(v=>!v.done&&!v.cancelled&&v.due<=TODAY&&v.due>addD(TODAY,-45));
+  return{u,first:first.length,firstOver:first.filter(L=>firstDue(L)<CLOCK).length,due:due.length,ten:leads.filter(L=>dispStatus(L)==='转单十天未成交').length,visits:visits.length,s:stats([u])}});
+  return `<div class="ph"><div><div class="eyebrow">绵阳、自贡 · 3 人 · 10 月至今</div><h1>团队</h1></div></div>
+  ${merged('<b>城市工作台</b>的团队部分、<b>业绩明细</b>。完整的数据分析（经营总览、渠道、转化、退费、老师供给、员工）下一轮再做。')}
+  <section class="card"><div class="cardhead"><h2>谁手上有事没做完</h2><span class="muted">点一行看这个人的客户</span></div><div class="tw"><table class="t"><thead><tr><th>员工</th><th class="n">首次跟进超时</th><th class="n">跟进逾期</th><th class="n">转单十天未成交</th><th class="n">待回访</th><th class="n">新客户</th><th class="n">12小时跟进率</th><th class="n">成交</th><th class="n">净营收</th><th class="n">回访完成率</th></tr></thead><tbody>
+  ${rows.map(r=>`<tr class="click" data-teamown="${r.u}"><td>${owner(r.u)}<div class="who">${USERS[r.u].role}</div></td><td class="n">${r.firstOver?'<span class="rdue bad">'+r.firstOver+'</span>':0}</td><td class="n">${r.due?'<span class="rdue bad">'+r.due+'</span>':0}</td><td class="n">${r.ten}</td><td class="n">${r.visits}</td><td class="n">${r.s.nw}</td><td class="n">${pct(r.s.ontime,r.s.withF)}</td><td class="n">${r.s.deals}</td><td class="n">${yuan(r.s.fee-r.s.rfa)}</td><td class="n">${pct(r.s.vd,r.s.vs)}</td></tr>`).join('')}</tbody></table></div></section>`};
+
+/* ================= 弹窗 ================= */
+const M=document.getElementById('modal');
+function openModal(html,onSubmit,wide){M.innerHTML=`<div class="dlg ${wide?'wide':''}" role="dialog" aria-modal="true">${html}</div>`;M.hidden=false;const f=M.querySelector('form');if(f&&onSubmit)f.addEventListener('submit',e=>{e.preventDefault();const r=onSubmit(f);if(r!==false){closeModal();render()}});const first=M.querySelector('input,textarea,select,button');if(first)first.focus()}
+function closeModal(){M.hidden=true;M.innerHTML=''}
+const foot=t=>`<div class="foot"><button class="btn" type="button" data-act="close">取消</button><button class="btn primary" type="submit">${t}</button></div>`;
+const fv=(f,n)=>{const e=f.elements[n];return e?String(e.value).trim():''};
+const errOn=(f,t)=>{const e=f.querySelector('.err');e.textContent=t;e.hidden=false;return false};
+let toastT;function toast(t){const e=document.getElementById('toast');e.textContent=t;e.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>e.hidden=true,3200)}
+function segHtml(name,opts,val){return `<div class="seg" data-seg="${name}">${opts.map(([k,l])=>`<button type="button" data-v="${k}" aria-pressed="${k===val}">${l}</button>`).join('')}</div><input type="hidden" name="${name}" value="${val}">`}
+
+function followModal(L){const next={新线索:'已联系',已联系:'已加微信',已加微信:'已报价',已报价:'已报价',转单:'转单'}[L.status]||L.status;
+  const st=OPEN.filter(s=>s!=='新线索');
+  openModal(`<form class="form"><h2>记跟进 · ${h(L.parent)}</h2><p class="hint">${childLine(L)} · 现在是 ${dispStatus(L)}</p>
+  <div class="fld"><span class="lb">跟进后的状态</span>${segHtml('st',st.map(s=>[s,s]),next)}</div>
+  <div class="fld"><label for="f-t">这次聊了什么</label><textarea id="f-t" name="t" placeholder="例如：加上微信了，家长想要女老师，周六上午有空"></textarea></div>
+  <div class="fld"><span class="lb">下次什么时候跟进</span>${segHtml('nd',[['1','明天'],['2','2 天后'],['3','3 天后'],['7','7 天后']],'2')}</div>
+  <p class="err" hidden></p>${foot('保存跟进')}</form>`,f=>{const t=fv(f,'t');if(!t)return errOn(f,'写一句这次聊了什么，方便下次接着聊');
+    const first=!L.follow.length;const s=fv(f,'st');L.follow.push({at:now(),by:me().id,status:s,text:t});
+    if(s==='转单'&&L.status!=='转单')L.transferAt=TODAY;L.status=s;L.nextDue=addD(TODAY,+fv(f,'nd'));
+    log(first?'首次跟进':'跟进',L.id,h(L.parent)+'：'+t);
+    toast(first?(tmin(L.follow[0].at)<=firstDue(L)?'首次跟进已记录，在 12 小时内 ✓':'首次跟进已记录（超过 12 小时）'):'跟进已保存，'+md(L.nextDue)+' 再提醒你')})}
+
+function relocateModal(L){openModal(`<form class="form"><h2>重新定位 · ${h(L.parent)}</h2><p class="hint">现在：${GEO[L.geo][0]}。改一下地址再搜，从结果里选对的那个。</p>
+  <div class="fld"><label for="g-a">上课地址</label><div class="qf"><input id="g-a" name="a" type="text" value="${h(L.address)}" style="flex:1"><button class="btn" type="button" data-act="geoSearch">搜索</button></div></div>
+  <div id="g-res" class="fld"></div><p class="err" hidden></p>${foot('用这个位置')}</form>`,f=>{const c=f.querySelector('input[name=pick]:checked');if(!c)return errOn(f,'先搜索，再选一个结果');
+    const d=CITY_D[L.city].find(x=>x[0]===c.dataset.d)||CITY_D[L.city][0];L.address=c.value;L.district=d[0];L.x=clamp(d[1]+(Math.random()-.5)*3,.6,19.4);L.y=clamp(d[2]+(Math.random()-.5)*3,.6,13.4);L.geo='success';
+    log('定位',L.id,h(L.parent)+' 定位到 '+L.address);toast('定位成功，附近老师已更新')});
+  M.querySelector('[data-act=geoSearch]').addEventListener('click',()=>{const a=M.querySelector('#g-a').value.trim();const comm=COMM.find(c=>a.includes(c))||pick(COMM);
+    const res=CITY_D[L.city].slice(0,3).map((d,i)=>[d[0],(i?d[0]:(CITY_D[L.city].find(x=>a.includes(x[0]))||d)[0])+comm+(i===0?'':'（'+['','东门','二期'][i]+'）')]);
+    M.querySelector('#g-res').innerHTML='<span class="lb">高德搜索结果</span>'+res.map((r,i)=>`<label class="checks"><span><input type="radio" name="pick" value="${h(L.city+r[1])}" data-d="${h(r[0])}" ${i===0?'checked':''}> ${h(L.city+r[1])}</span></label>`).join('')})}
+
+function pushTo(L,tid){let O=S.orders.find(o=>o.leadId===L.id&&o.status==='进行中');if(!O)O=mkOrder(L,now(),me().id);
+  O.pushes.push({tid,at:now(),by:me().id,stage:'已推送'});if(L.status!=='转单'&&OPEN.includes(L.status)){L.status='转单';L.transferAt=TODAY;L.follow.push({at:now(),by:me().id,status:'转单',text:'推送给 '+TBY(tid).name+' 老师'})}
+  log('推送',O.id,'把 '+h(L.parent)+' 的单推给 '+TBY(tid).name);toast('已推送给 '+TBY(tid).name+'，记下了推送人和时间')}
+
+function dealModal(L,tid){const O=S.orders.find(o=>o.leadId===L.id&&o.status==='进行中');const cand=[...new Set([...(O?O.pushes.map(p=>p.tid):[]),...nearTeachers(L).slice(0,6).map(x=>x.t.id)])];
+  if(tid&&!cand.includes(tid))cand.unshift(tid);
+  openModal(`<form class="form"><h2>记成交 · ${h(L.parent)}</h2>
+  <div class="fld"><span class="lb">成交类型</span>${segHtml('kind',[['info','信息费单'],['org','机构课（开发中）']],'info')}</div>
+  <div class="fld"><label for="d-t">老师</label><select id="d-t" name="t">${cand.length?cand.map(id=>`<option value="${id}" ${id===tid?'selected':''}>${h(TBY(id).name)}${O&&O.pushes.some(p=>p.tid===id)?'（推送过）':''}</option>`).join(''):'<option value="">附近没有老师</option>'}</select></div>
+  <div data-kind="info" class="form"><div class="two"><div class="fld"><label for="d-f">信息费（元）</label><input id="d-f" name="f" type="number" min="1" value="${L.quote?L.quote*2:360}"></div><div class="fld"><label for="d-h">课时费（元/小时）</label><input id="d-h" name="h" type="number" min="1" value="${L.quote||180}"></div></div>
+  <div class="fld"><label for="d-w">每周几次</label><select id="d-w" name="w"><option>1</option><option selected>2</option><option>3</option></select></div></div>
+  <div data-kind="org" class="form" hidden><div class="two"><div class="fld"><label for="o-p">每次课收家长（元）</label><input id="o-p" name="op" type="number" value="200"></div><div class="fld"><label for="o-tp">每次课给老师（元）</label><input id="o-tp" name="otp" type="number" value="150"></div></div>
+  <div class="two"><div class="fld"><label for="o-n">买了几次课</label><input id="o-n" name="on" type="number" value="20"></div><div class="fld"><label for="o-s">第一次上课</label><input id="o-s" name="os" type="date" value="${addD(TODAY,2)}"></div></div>
+  <div class="fld"><span class="lb">谁收钱</span>${segHtml('opay',[['company','公司收'],['teacher','老师代收']],'company')}</div>
+  <div class="fld"><span class="lb">和老师怎么结算</span>${segHtml('oset',[['per_lesson','每次课'],['weekly','按周'],['monthly','按月']],'weekly')}</div></div>
+  <p class="hint">保存后自动生成成交后第 7 / 30 / 90 / 180 / 365 天的回访。提交按钮点一次就锁住，不会重复记。</p><p class="err" hidden></p>${foot('确认成交')}</form>`,f=>{
+    const t=fv(f,'t');if(!t)return errOn(f,'选一位老师');const kind=fv(f,'kind');
+    if(kind==='info'){const fee=+fv(f,'f');if(!(fee>0)||fee%1)return errOn(f,'信息费要填正整数');
+      const D=mkDeal(L,t,TODAY,'info',{fee,hourly:+fv(f,'h'),weekly:+fv(f,'w')},me().id);D.at=now();}
+    else{const n=+fv(f,'on'),p=+fv(f,'op');if(!(n>0)||!(p>0))return errOn(f,'课次和收费要填正数');
+      const D=mkDeal(L,t,TODAY,'org',{fee:0},me().id);D.at=now();mkOrg(D,{price:p,teacherPay:+fv(f,'otp'),total:n,pay:fv(f,'opay'),settle:fv(f,'oset'),start:fv(f,'os')||TODAY,perWeek:2,time:wk(fv(f,'os')||TODAY)+' 19:00'});}
+    L.status='已成交';L.nextDue=null;L.follow.push({at:now(),by:me().id,status:'已成交',text:'和 '+TBY(t).name+' 老师成交'+(kind==='org'?'（机构课）':'')});
+    if(O){O.status='已成交';const p=O.pushes.find(p=>p.tid===t);if(p)p.stage='试课成功';}
+    log('成交',L.id,h(L.parent)+' 成交'+(kind==='org'?'机构课':''));toast('成交已记录，回访计划已生成')});
+  M.querySelector('[data-seg=kind]').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;M.querySelectorAll('[data-kind]').forEach(x=>x.hidden=x.dataset.kind!==b.dataset.v)})}
+
+function refundModal(D){const L=LBY(D.leadId);openModal(`<form class="form"><h2>记退费 · ${h(L.parent)}</h2><p class="hint">信息费 ${yuan(D.fee)} · ${md(D.date)} 成交</p>
+  <div class="two"><div class="fld"><label for="r-a">退多少（元）</label><input id="r-a" name="a" type="number" value="${D.fee}"></div><div class="fld"><label for="r-d">退费日期</label><input id="r-d" name="d" type="date" value="${TODAY}"></div></div>
+  <div class="fld"><span class="lb">哪一方的原因</span>${segHtml('side',[['家长侧','家长'],['老师侧','老师'],['待定','还不确定']],'家长侧')}</div>
+  <div class="fld"><label for="r-r">原因</label><select id="r-r" name="r">${REFUND_REASONS.map(r=>`<option>${r}</option>`).join('')}</select></div>
+  <p class="err" hidden></p>${foot('确认退费')}</form>`,f=>{const a=+fv(f,'a'),d=fv(f,'d');
+    if(!(a>0)||a%1)return errOn(f,'退费金额要填正整数');if(a>D.fee)return errOn(f,'退费不能超过信息费 '+yuan(D.fee));if(!d||d<D.date)return errOn(f,'退费日期不能早于成交日期 '+md(D.date));if(d>TODAY)return errOn(f,'退费日期不能晚于今天');
+    D.refund={amount:a,date:d,side:fv(f,'side'),reason:fv(f,'r'),by:me().id,at:now()};cancelVisits(D);L.status='成交后退费';L.follow.push({at:now(),by:me().id,status:'成交后退费',text:'退费 '+yuan(a)+'，'+fv(f,'r')});
+    log('退费',L.id,h(L.parent)+' 退费 '+yuan(a));toast('退费已记录，之后的回访已取消')})}
+
+function lostModal(L){openModal(`<form class="form"><h2>标记流失 · ${h(L.parent)}</h2><div class="fld"><label for="l-r">原因</label><select id="l-r" name="r">${LOST_REASONS.map(r=>`<option>${r}</option>`).join('')}</select></div><div class="fld"><label for="l-n">补充（可不填）</label><textarea id="l-n" name="n"></textarea></div><p class="err" hidden></p>${foot('标记流失')}</form>`,f=>{
+  L.status='已流失';L.lostReason=fv(f,'r');L.nextDue=null;L.follow.push({at:now(),by:me().id,status:'已流失',text:L.lostReason+(fv(f,'n')?'：'+fv(f,'n'):'')});log('流失',L.id,h(L.parent)+'：'+L.lostReason);toast('已标记流失')})}
+
+function visitModal(D,k){const L=LBY(D.leadId);const v=D.visits.find(x=>x.k===k);openModal(`<form class="form"><h2>第 ${k} 天回访 · ${h(L.parent)}</h2><p class="hint">${childLine(L)} · 老师 ${h(TBY(D.teacherId).name)} · ${md(D.date)} 成交</p>
+  <div class="fld"><span class="lb">家长怎么说</span>${segHtml('r',[['满意','满意'],['一般','一般'],['不满意','不满意'],['联系不上','联系不上']],'满意')}</div>
+  <div class="fld"><label for="v-n">回访记录</label><textarea id="v-n" name="n" placeholder="例如：孩子很喜欢老师，家长想加一节英语"></textarea></div><p class="err" hidden></p>${foot('完成回访')}</form>`,f=>{
+  const r=fv(f,'r');v.done=true;v.by=me().id;v.at=now();v.result=r;v.note=fv(f,'n');log('回访',L.id,h(L.parent)+' 第 '+k+' 天回访：'+r);
+  toast(r==='不满意'?'已记录。家长不满意，建议今天就联系老师调整，避免退费':'回访已完成')})}
+
+function lessonModal(G,lid){const x=G.lessons.find(l=>l.id===lid);const L=LBY(G.leadId);openModal(`<form class="form"><h2>消课 · ${h(L.child.name)}</h2><p class="hint">${md(x.date)} · 第 ${G.lessons.indexOf(x)+1} / ${G.total} 次 · 老师 ${h(TBY(G.teacherId).name)}</p>
+  <div class="fld"><span class="lb">这节课</span>${segHtml('r',[['completed','正常上完'],['partial','只上了一部分'],['rescheduled','改期了']],'completed')}</div><p class="err" hidden></p>${foot('确认')}</form>`,f=>{
+  const r=fv(f,'r');x.result=r;x.by=me().id;x.at=now();if(r==='rescheduled'){const last=G.lessons[G.lessons.length-1].date;G.lessons.push({id:'l'+(S.seq++),date:addD(last,3),result:'pending'})}
+  log('消课',L.id,h(L.child.name)+' '+{completed:'上完一节',partial:'上了一部分',rescheduled:'改期'}[r]);toast(r==='rescheduled'?'已改期，课表往后顺延':'已消课，还剩 '+orgLeft(G)+' 次')})}
+
+function renewModal(G){const L=LBY(G.leadId);openModal(`<form class="form"><h2>登记续费 · ${h(L.child.name)}</h2><p class="hint">还剩 ${orgLeft(G)} 次课，每次 ${yuan(G.price)}</p><div class="fld"><label for="rn">再买几次</label><input id="rn" name="n" type="number" value="20"></div><p class="err" hidden></p>${foot('登记续费')}</form>`,f=>{
+  const n=+fv(f,'n');if(!(n>0)||n%1)return errOn(f,'次数要填正整数');let d=G.lessons[G.lessons.length-1].date;for(let i=0;i<n;i++){d=addD(d,i%2?4:3);G.lessons.push({id:'l'+(S.seq++),date:d,result:'pending'})}G.total+=n;
+  G.receipts.push({date:TODAY,amount:n*G.price,status:G.pay==='company'?'已到账':'待确认',note:'续费 '+n+' 次'});log('续费',L.id,h(L.child.name)+' 续费 '+n+' 次');toast('续费已登记')})}
+
+function orgModal(G){const L=LBY(G.leadId);const R2={pending:['待上',''],completed:['已上','green'],partial:['部分','orange'],rescheduled:['改期','']};
+  openModal(`<h2>机构课 · ${h(L.child.name)}</h2><p class="hint">${h(L.parent)} · 老师 ${h(TBY(G.teacherId).name)} · ${h(G.time)} · ${G.pay==='company'?'公司收款':'老师代收'}</p>
+  <div class="kpis"><div class="kpi"><span class="l">已上</span><span class="v">${orgUsed(G)} / ${G.total}</span></div><div class="kpi"><span class="l">每次收家长</span><span class="v">${yuan(G.price)}</span><span class="s">给老师 ${yuan(G.teacherPay)}</span></div><div class="kpi"><span class="l">已上的毛利</span><span class="v">${yuan(orgUsed(G)*(G.price-G.teacherPay))}</span></div></div>
+  <h3>收款</h3>${G.receipts.length?`<div>${G.receipts.map(r=>`<div class="row"><div class="rmain"><div class="rtitle">${yuan(r.amount)} ${chip(r.status,r.status==='已到账'?'green':'orange')}</div><div class="rsub">${md(r.date)} · ${h(r.note)}</div></div></div>`).join('')}</div>`:empty('还没有收款记录')}
+  <h3>课表</h3><div class="tw"><table class="t"><thead><tr><th>次</th><th>日期</th><th>状态</th><th>操作人</th><th></th></tr></thead><tbody>${G.lessons.map((x,i)=>`<tr><td>${i+1}</td><td>${md(x.date)} ${wk(x.date)}</td><td>${chip(R2[x.result][0],R2[x.result][1])}</td><td class="who">${x.by?owner(x.by):''}</td><td>${x.result==='pending'&&x.date<=TODAY?`<button class="btn sm primary" data-act="lesson" data-gid="${G.id}" data-lid="${x.id}" type="button">消课</button>`:''}</td></tr>`).join('')}</tbody></table></div>
+  <div class="foot"><button class="btn" data-act="renew" data-gid="${G.id}" type="button">登记续费</button><button class="btn primary" data-act="close" type="button">关闭</button></div>`,null,true)}
+
+function orderModal(O){const L=O.leadId?LBY(O.leadId):null;const near=nearTeachers(O,{grade:O.grade,subjects:O.subjects});const pushed=new Set(O.pushes.map(p=>p.tid));
+  openModal(`<h2>订单 · ${L?h(L.parent):'群里接的单'}</h2><dl class="kv"><dt>要求</dt><dd>${h(O.grade)} · ${h(O.subjects.join('、'))}${O.pay?' · '+yuan(O.pay)+'/小时':''} · ${h(O.time)}</dd><dt>地址</dt><dd>${h(O.address||O.district)} ${O.x==null?chip('未定位','red'):''}</dd><dt>建单</dt><dd>${rel(O.created)} · ${owner(O.by)}</dd>${O.raw?`<dt>原文</dt><dd>${h(O.raw)}</dd>`:''}</dl>
+  <h3>推送记录</h3>${O.pushes.length?`<div class="tw"><table class="t"><thead><tr><th>老师</th><th>推送</th><th>进度</th></tr></thead><tbody>${O.pushes.map((p,i)=>`<tr><td>${h(TBY(p.tid).name)}</td><td>${rel(p.at)} · ${owner(p.by)}</td><td><select data-stage="${O.id}" data-i="${i}" aria-label="推送进度">${PUSH_STAGES.map(s=>`<option ${p.stage===s?'selected':''}>${s}</option>`).join('')}</select></td></tr>`).join('')}</tbody></table></div>`:empty('还没推送')}
+  <h3>推荐老师 <span class="muted">5 公里内</span></h3>${near.length?`<div>${near.slice(0,8).map(x=>`<div class="row"><div class="rmain"><div class="rtitle">${h(x.t.name)} ${chip(TIER[x.tier],x.tier===1?'green':x.tier===2?'blue':'')}${x.t.focus?chip('★','violet'):''}</div><div class="rsub">${x.d.toFixed(1)} 公里 · ${h(x.t.type)} · ${x.t.subjects.join('、')}</div></div><div class="ract">${pushed.has(x.t.id)?chip('已推送','blue'):`<button class="btn sm primary" data-act="pushOrder" data-oid="${O.id}" data-tid="${x.t.id}" type="button">推送</button>`}</div></div>`).join('')}</div>`:empty(O.x==null?'订单没定位，算不出附近老师':'5 公里内没有可接单的老师')}
+  <div class="foot">${L?`<button class="btn" data-open="${L.id}" type="button">打开客户页</button>`:''}<button class="btn primary" data-act="close" type="button">关闭</button></div>`,null,true)}
+
+function pasteModal(){const sample='绵阳涪城区翠湖花园，初二女孩，数学物理，周六上午 2 小时，180 元一小时，想要女老师';
+  openModal(`<form class="form"><h2>粘贴订单文字</h2><p class="hint">把群里或家长发来的一段话贴进来，系统识别出年级、科目、地址、价格。</p><div class="fld"><label for="p-t">订单文字</label><textarea id="p-t" name="t">${sample}</textarea></div><div id="p-prev" class="note"></div><p class="err" hidden></p>${foot('生成订单')}</form>`,f=>{
+    const p=parseOrder(fv(f,'t'));if(!p.grade)return errOn(f,'没认出年级，请在文字里写上“初二”这类年级');
+    const O=mkOrder(null,now(),me().id);Object.assign(O,p,{raw:fv(f,'t')});const d=CITY_D[O.city].find(x=>x[0]===p.district);if(d){O.x=clamp(d[1]+(Math.random()-.5)*3,.6,19.4);O.y=clamp(d[2]+(Math.random()-.5)*3,.6,13.4)}
+    log('建单',O.id,'识别订单：'+O.grade+' '+O.subjects.join('、'));setTimeout(()=>orderModal(O),0);toast('订单已生成，推荐了附近老师')});
+  const upd=()=>{const p=parseOrder(M.querySelector('#p-t').value);M.querySelector('#p-prev').innerHTML=`识别结果：城市 <b>${h(p.city)}</b> · 区域 <b>${h(p.district||'没认出')}</b> · 年级 <b>${h(p.grade||'没认出')}</b> · 科目 <b>${h(p.subjects.join('、')||'没认出')}</b> · 价格 <b>${p.pay?p.pay+' 元/小时':'没认出'}</b>`};
+  M.querySelector('#p-t').addEventListener('input',upd);upd()}
+function parseOrder(t){const city=Object.keys(CITY_D).find(c=>t.includes(c))||myCities()[0];const dd=CITY_D[city].find(d=>t.includes(d[0]));const comm=COMM.find(c=>t.includes(c))||'';
+  const grade=GRADES.find(g=>t.includes(g))||'';const subjects=SUBJ.filter(s=>t.includes(s.slice(0,2)));const m=t.match(/(\d{2,3})\s*元/);
+  const tm=t.match(/(周[一二三四五六日末][^，,。]*)/);return{city,district:dd?dd[0]:'',address:(dd?dd[0]:'')+comm,grade,subjects:subjects.length?subjects:['数学'],pay:m?+m[1]:null,time:tm?tm[1]:'待定'}}
+
+function leadModal(){openModal(`<form class="form"><h2>新增客户</h2><div class="two"><div class="fld"><label for="n-p">家长称呼</label><input id="n-p" name="p" type="text" placeholder="例如：陈女士"></div><div class="fld"><label for="n-ph">手机</label><input id="n-ph" name="ph" type="tel"></div></div>
+  <div class="two"><div class="fld"><label for="n-g">年级</label><select id="n-g" name="g">${GRADES.map(g=>`<option ${g==='初二'?'selected':''}>${g}</option>`).join('')}</select></div><div class="fld"><label for="n-s">科目</label><select id="n-s" name="s">${SUBJ.map(s=>`<option>${s}</option>`).join('')}</select></div></div>
+  <div class="two"><div class="fld"><label for="n-c">城市</label><select id="n-c" name="c">${myCities().map(c=>`<option>${c}</option>`).join('')}</select></div><div class="fld"><label for="n-src">来源</label><select id="n-src" name="src">${SOURCES.map(s=>`<option>${s}</option>`).join('')}</select></div></div>
+  <div class="fld"><label for="n-a">上课地址（小区名就行）</label><input id="n-a" name="a" type="text" placeholder="例如：涪城区 翠湖花园"></div><p class="err" hidden></p>${foot('保存客户')}</form>`,f=>{
+  if(!fv(f,'p'))return errOn(f,'填一下家长称呼');if(!/^1\d{10}$/.test(fv(f,'ph')))return errOn(f,'手机号要 11 位数字');
+  const city=fv(f,'c'),a=fv(f,'a'),d=CITY_D[city].find(x=>a.includes(x[0]));
+  const L={id:'c'+(S.seq++),parent:fv(f,'p'),phone:fv(f,'ph').slice(0,3)+'****'+fv(f,'ph').slice(7),child:{name:'（待补）',grade:fv(f,'g'),school:'（待补）'},subject:fv(f,'s'),city,district:d?d[0]:'',address:city+a,
+    x:d?clamp(d[1]+(Math.random()-.5)*3,.6,19.4):null,y:d?clamp(d[2]+(Math.random()-.5)*3,.6,13.4):null,geo:d?'success':'failed',source:fv(f,'src'),entry:'standard',inv:'',starred:false,follow:[],nextDue:null,lostReason:'',quote:null,transferAt:null,owner:me().id,wecom:me().wecom,created:now(),status:'新线索'};
+  S.leads.push(L);log('新客户',L.id,h(L.parent));setTimeout(()=>go('cust:'+L.id),0);toast(d?'已保存并定位成功，12 小时内要首次跟进':'已保存，但地址没定位成功，请补充区县')})}
+
+function teacherSave(f){const lv=[...f.querySelectorAll('[name=lv]:checked')].map(x=>x.value),sj=[...f.querySelectorAll('[name=sj]:checked')].map(x=>x.value);const er=f.querySelector('#tf-err');
+  const bad=t=>{er.textContent=t;er.hidden=false};if(!fv(f,'n'))return bad('填一下姓名');if(!/^1\d{10}$/.test(fv(f,'p')))return bad('手机号要 11 位数字');if(!lv.length||!sj.length)return bad('学段和科目至少各选一个');
+  const city=fv(f,'c'),a=fv(f,'a'),d=CITY_D[city].find(x=>a.includes(x[0]));
+  const t={id:'t'+(S.seq++),name:fv(f,'n'),phone:fv(f,'p').slice(0,3)+'****'+fv(f,'p').slice(7),sex:'',type:fv(f,'ty'),city,district:d?d[0]:'',address:a||'（未填）',x:d?d[1]:null,y:d?d[2]:null,geo:d?'success':'failed',levels:lv,subjects:sj,status:'可接单',focus:false,hist:null,notes:[],entered:TODAY,enteredBy:me().name};
+  S.teachers.push(t);log('录老师',t.id,t.name);toast(d?'已保存，定位成功':'已保存，地址没定位成功，请写上区县');go('teacher:'+t.id)}
+
+/* ================= 事件 ================= */
+const ACT={
+  reset(){seed();prev=[];view={};page='todo';render();toast('演示数据已重置')},
+  back,close:closeModal,
+  star(el){const L=LBY(el.dataset.id);L.starred=!L.starred;render()},
+  follow(el){followModal(LBY(el.dataset.id))},
+  quickFollow(el){const L=LBY(el.dataset.id);const t=document.getElementById('qtext').value.trim();if(!t){toast('先写一句再保存');return}
+    const first=!L.follow.length;const s=L.status==='新线索'?'已联系':L.status;L.follow.push({at:now(),by:me().id,status:s,text:t});if(OPEN.includes(s)){L.status=s;L.nextDue=addD(TODAY,2)}log(first?'首次跟进':'跟进',L.id,h(L.parent)+'：'+t);render();toast('已保存，2 天后再提醒你')},
+  relocate(el){relocateModal(LBY(el.dataset.id))},
+  push(el){pushTo(LBY(el.dataset.id),el.dataset.tid);render()},
+  pushOrder(el){const O=OBY(el.dataset.oid);const L=O.leadId?LBY(O.leadId):null;if(L)pushTo(L,el.dataset.tid);else{O.pushes.push({tid:el.dataset.tid,at:now(),by:me().id,stage:'已推送'});log('推送',O.id,'推给 '+TBY(el.dataset.tid).name);toast('已推送')}
+    if(!M.hidden)orderModal(O);render()},
+  deal(el){dealModal(LBY(el.dataset.id),el.dataset.tid)},
+  refund(el){refundModal(DBY(el.dataset.did))},
+  lost(el){lostModal(LBY(el.dataset.id))},
+  visit(el){visitModal(DBY(el.dataset.did),+el.dataset.k)},
+  lesson(el){lessonModal(GBY(el.dataset.gid),el.dataset.lid)},
+  receipt(el){const G=GBY(el.dataset.gid);G.receipts.forEach(r=>{if(r.status==='待确认')r.status='已到账'});log('到账',G.leadId,'确认老师代收的钱已到账');render();toast('已确认到账')},
+  renew(el){renewModal(GBY(el.dataset.gid))},
+  orgDetail(el){orgModal(GBY(el.dataset.gid))},
+  orderDetail(el){orderModal(OBY(el.dataset.oid))},
+  pasteOrder:pasteModal,newLead:leadModal,
+  activate(el){const L=LBY(el.dataset.id);L.inv='active';L.created=now();L.wecom=USERS[L.owner].wecom;log('激活',L.id,'激活库存客户 '+h(L.parent));render();toast('已激活，算今天的新客户，12 小时内要首次跟进')},
+  tfocus(el){const t=TBY(el.dataset.tid);t.focus=!t.focus;log('关注',t.id,(t.focus?'特别关注 ':'取消关注 ')+t.name);render()},
+  tnote(el){const t=TBY(el.dataset.tid);const ta=document.getElementById('tn-'+t.id);const v=ta.value.trim();if(!v){toast('先写沟通内容');return}t.notes.push({at:now(),by:me().id,text:v});log('老师跟进',t.id,t.name+'：'+v);render();toast('已保存到 '+t.name+' 的记录')},
+  mapAt(el){const L=LBY(el.dataset.id);view.map={city:L.city,c:true,t:true,o:true,sel:L.x!=null?'c:'+L.id:null};go('map')}
+};
+document.addEventListener('click',e=>{
+  const a=e.target.closest('[data-act]');if(a&&ACT[a.dataset.act]){e.stopPropagation();if(a.closest('#modal')&&a.dataset.act!=='pushOrder')closeModal();ACT[a.dataset.act](a);return}
+  const sg=e.target.closest('[data-seg] button');if(sg){const w=sg.parentElement;w.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b===sg));w.nextElementSibling.value=sg.dataset.v;return}
+  const n=e.target.closest('[data-nav]');if(n){prev=[];go(n.dataset.nav,true);return}
+  const o=e.target.closest('[data-open]');if(o){closeModal();go('cust:'+o.dataset.open);return}
+  const t=e.target.closest('[data-topen]');if(t){closeModal();go('teacher:'+t.dataset.topen);return}
+  const ct=e.target.closest('[data-ctab]');if(ct){view.cust.tab=ct.dataset.ctab;render();return}
+  const tt=e.target.closest('[data-ttab]');if(tt){view.t.tab=tt.dataset.ttab;render();return}
+  const tc=e.target.closest('[data-tcat]');if(tc){view.t.cat=tc.dataset.tcat;render();return}
+  const mc=e.target.closest('[data-mcity]');if(mc){view.map.city=mc.dataset.mcity;view.map.sel=null;render();return}
+  const ms=e.target.closest('[data-sel]');if(ms){view.map.sel=ms.dataset.sel;render();return}
+  const tm=e.target.closest('[data-teamown]');if(tm){view.cust={tab:'open',q:'',star:false,owner:tm.dataset.teamown,st:''};prev=[];go('customers');return}
+  if(e.target===M)closeModal();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!M.hidden)closeModal();if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('circle[data-sel]')){e.preventDefault();view.map.sel=e.target.dataset.sel;render()}});
+document.addEventListener('change',e=>{const el=e.target;
+  if(el.matches('[data-stage]')){const O=OBY(el.dataset.stage);const p=O.pushes[+el.dataset.i];p.stage=el.value;log('派单进度',O.id,TBY(p.tid).name+'：'+el.value);
+    toast(el.value==='试课成功'?'试课成功！点“记成交”把单子记上':'已更新：'+el.value);if(!M.hidden)orderModal(O);render();return}
+  if(el.id==='cst'){view.cust.st=el.value;render()}else if(el.id==='cown'){view.cust.owner=el.value;render()}else if(el.id==='cstar'){view.cust.star=el.checked;render()}
+  else if(el.id==='tsort'){view.t.sort=el.value;render()}else if(el.id==='tgeo'){view.t.geo=el.value;render()}
+  else if(el.id==='reown'){const L=LBY(el.dataset.id);const from=L.owner;L.owner=el.value;L.wecom=USERS[L.owner].wecom;log('换负责人',L.id,h(L.parent)+'：'+owner(from)+' → '+owner(L.owner));render();toast('已交给 '+owner(L.owner)+'，记录了交接人和时间')}
+  else if(el.matches('[data-mlayer]')){view.map[el.dataset.mlayer]=el.checked;render()}
+  else if(el.id==='role'){role=el.value;prev=[];view={};page='todo';render()}});
+let qT;document.addEventListener('input',e=>{const el=e.target;const map={cq:['cust','q'],tq:['t','q'],tq2:['t','q2']}[el.id];if(!map)return;clearTimeout(qT);qT=setTimeout(()=>{view[map[0]][map[1]]=el.value;render();const n=document.getElementById(el.id);if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length)}},250)});
+document.addEventListener('submit',e=>{if(e.target.id==='tform'){e.preventDefault();teacherSave(e.target)}});
+
+seed();render();
+</script>
