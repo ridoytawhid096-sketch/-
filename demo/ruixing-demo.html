@@ -1,0 +1,1102 @@
+<title>锐兴新系统演示</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* 布局：左侧导航 + 主工作区；手机宽度时导航移到底部 */
+:root{
+  --bg:#F2F3EF; --surface:#FFFFFF; --surface-2:#EBEDE7; --fg:#1A1C19; --muted:#5A5F57; --line:#D8DBD2;
+  --accent:#1D5BBF; --accent-soft:#E2EBFA; --on-accent:#FFFFFF;
+  --good:#1B7546; --good-soft:#E1F2E8; --warn:#A04E0A; --warn-soft:#FBEBDC; --bad:#AE2A20; --bad-soft:#FBE6E3;
+  --violet:#6446B4; --violet-soft:#ECE7FA; --shade:rgba(20,22,20,.45);
+  --font-body:"Noto Sans SC",system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  --font-display:"Noto Serif SC","Songti SC","STSong",serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111311; --surface:#1A1D1A; --surface-2:#242824; --fg:#E8EBE5; --muted:#A3A89F; --line:#323731;
+  --accent:#86ADF3; --accent-soft:#1C2A45; --on-accent:#0D1830;
+  --good:#72CD9B; --good-soft:#15301F; --warn:#F0A75E; --warn-soft:#3A2814; --bad:#F38B80; --bad-soft:#3C1D1A;
+  --violet:#BCA7F2; --violet-soft:#2A2340; --shade:rgba(0,0,0,.6); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111311; --surface:#1A1D1A; --surface-2:#242824; --fg:#E8EBE5; --muted:#A3A89F; --line:#323731;
+  --accent:#86ADF3; --accent-soft:#1C2A45; --on-accent:#0D1830;
+  --good:#72CD9B; --good-soft:#15301F; --warn:#F0A75E; --warn-soft:#3A2814; --bad:#F38B80; --bad-soft:#3C1D1A;
+  --violet:#BCA7F2; --violet-soft:#2A2340; --shade:rgba(0,0,0,.6); color-scheme:dark}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:14px;line-height:1.55}
+*{box-sizing:border-box}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.app{display:flex;min-height:100%}
+.side{width:228px;flex:none;background:var(--surface);border-right:1px solid var(--line);padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:16px;display:flex;flex-direction:column;gap:18px;position:sticky;top:0;align-self:flex-start;height:100vh;overflow:auto}
+.brand{display:flex;flex-direction:column;gap:2px}
+.brand b{font-family:var(--font-display);font-size:22px;letter-spacing:.04em}
+.brand span{font-size:12px;color:var(--muted)}
+.rolebox{display:flex;flex-direction:column;gap:6px}
+.rolebox label{font-size:12px;color:var(--muted);letter-spacing:.04em}
+#nav{display:flex;flex-direction:column;gap:2px}
+.nv{display:flex;align-items:center;justify-content:space-between;gap:8px;height:42px;padding:0 12px;border-radius:8px;border:0;background:transparent;text-align:left;cursor:pointer;font-size:15px}
+.nv:hover{background:var(--surface-2)}
+.nv[aria-current="page"]{background:var(--accent-soft);color:var(--accent);font-weight:700}
+.nv .bd{min-width:22px;height:20px;padding:0 6px;border-radius:999px;background:var(--bad);color:var(--surface);font-size:12px;display:inline-flex;align-items:center;justify-content:center;font-weight:700}
+.sidefoot{margin-top:auto;display:flex;flex-direction:column;gap:8px;font-size:12px;color:var(--muted)}
+main{flex:1;min-width:0;padding-block:20px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+@media (min-width:821px){main{padding-left:28px}}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.demo-strip{font-size:12px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.ph{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px}
+.ph h1{margin:0;font-family:var(--font-display);font-size:26px;text-wrap:balance}
+.eyebrow{font-size:12px;color:var(--muted);letter-spacing:.06em}
+h2{margin:0;font-size:16px}
+h3{margin:0;font-size:14px}
+.muted{color:var(--muted);font-weight:400;font-size:13px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.cardhead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.grid2{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start}
+.grid2 > *{min-width:0}
+.stack{display:flex;flex-direction:column;gap:16px;min-width:0}
+@media (max-width:980px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.btn{height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:500}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn.sm{height:32px;padding:0 10px;font-size:13px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.link{border:0;background:none;padding:0;color:var(--accent);cursor:pointer;font:inherit;text-align:left}
+.chip{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:999px;font-size:12px;background:var(--surface-2);color:var(--muted);white-space:nowrap;font-weight:500}
+.chip.blue{background:var(--accent-soft);color:var(--accent)}
+.chip.green{background:var(--good-soft);color:var(--good)}
+.chip.orange{background:var(--warn-soft);color:var(--warn)}
+.chip.red{background:var(--bad-soft);color:var(--bad)}
+.chip.violet{background:var(--violet-soft);color:var(--violet)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.row{display:flex;align-items:center;gap:12px;padding:12px 2px;border-top:1px solid var(--line);cursor:pointer}
+.row:first-of-type{border-top:0}
+.row:hover{background:var(--surface-2)}
+.rmain{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.rtitle{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-weight:500}
+.rsub{font-size:13px;color:var(--muted)}
+.rdue{font-size:13px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.rdue.bad{color:var(--bad);font-weight:700}
+.rdue.warn{color:var(--warn);font-weight:500}
+@media (max-width:560px){.row{flex-wrap:wrap}.rdue{order:3}.ract{order:4;margin-left:auto}}
+.empty{padding:16px;border-radius:8px;background:var(--surface-2);color:var(--muted);font-size:13px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.kpi .l{font-size:13px;color:var(--muted)}
+.kpi .v{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.kpi .s{font-size:12px;color:var(--muted)}
+.kpi.dark{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.kpi.dark .l,.kpi.dark .s{color:var(--bg);opacity:.75}
+.v.bad{color:var(--bad)}
+.tw{overflow-x:auto}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+.t th{font-weight:500;color:var(--muted);text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap;font-size:13px}
+.t td{padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+.t tr:last-child td{border-bottom:0}
+.t .n{text-align:right;font-variant-numeric:tabular-nums}
+.t tr.click{cursor:pointer}
+.t tr.click:hover td{background:var(--surface-2)}
+.t tr.total td{font-weight:700;border-top:2px solid var(--line)}
+.cell-good{background:var(--accent-soft)}
+.cell-best{background:var(--accent);color:var(--on-accent);font-weight:700}
+.cell-bad{background:var(--bad-soft);color:var(--bad);font-weight:700}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{height:44px;padding:0 14px;border:0;border-bottom:3px solid transparent;background:transparent;cursor:pointer;color:var(--muted);font-size:15px;white-space:nowrap}
+.tab[aria-selected="true"]{border-bottom-color:var(--accent);color:var(--fg);font-weight:700}
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.fld{display:flex;flex-direction:column;gap:4px;min-width:0}
+.fld > label,.fld > .lb{font-size:12px;color:var(--muted)}
+input[type=text],input[type=date],input[type=search],input[type=tel],select,textarea{height:40px;border:1px solid var(--line);border-radius:8px;padding:0 10px;background:var(--surface);min-width:0}
+textarea{height:auto;min-height:84px;padding:8px 10px;resize:vertical;width:100%}
+.form{display:flex;flex-direction:column;gap:14px}
+.form .fld input,.form .fld select{width:100%}
+.form .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:480px){.form .two{grid-template-columns:minmax(0,1fr)}}
+.checks{display:flex;flex-wrap:wrap;gap:6px 14px}
+.checks label{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--fg)}
+.hint{font-size:13px;color:var(--muted);margin:0}
+.hint.ok{color:var(--good)}
+.err{font-size:13px;color:var(--bad);margin:0;font-weight:500}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{height:36px;padding:0 14px;border:0;background:var(--surface);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;font-size:14px}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;min-width:0}
+.timeline{display:flex;flex-direction:column}
+.ti{display:grid;grid-template-columns:72px minmax(0,1fr);gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.ti:first-child{border-top:0}
+.ti .d{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.ti p{margin:2px 0 0}
+.bars{display:flex;flex-direction:column;gap:8px}
+.bar{display:grid;grid-template-columns:110px minmax(0,1fr) 72px;gap:10px;align-items:center;font-size:13px}
+.bar .tr{height:18px;background:var(--surface-2);border-radius:4px;overflow:hidden}
+.bar .fi{height:100%;background:var(--accent)}
+.bar .fi.r{background:var(--bad)}
+.bar .vv{text-align:right;font-variant-numeric:tabular-nums}
+.vbars{display:flex;align-items:flex-end;gap:18px;height:200px;padding:0 6px;border-bottom:1px solid var(--line)}
+.vb{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px;height:100%;font-size:13px;font-variant-numeric:tabular-nums}
+.vb .c{width:100%;max-width:120px;background:var(--accent);border-radius:4px 4px 0 0}
+.vb .c.part{opacity:.55}
+.vlabels{display:flex;gap:18px;padding:0 6px;font-size:13px;color:var(--muted)}
+.vlabels div{flex:1;text-align:center}
+.attn{display:flex;flex-direction:column;gap:8px}
+.attn button{display:flex;flex-direction:column;gap:2px;align-items:flex-start;text-align:left;padding:10px 12px;border-radius:8px;border:0;background:var(--surface-2);cursor:pointer}
+.attn button.bad{background:var(--bad-soft)}
+.attn button .go{font-size:12px;color:var(--accent)}
+.attn button.bad .go{color:var(--bad)}
+.kanban{display:grid;grid-template-columns:repeat(4,minmax(220px,1fr));gap:12px;overflow-x:auto;padding-bottom:4px}
+.col{background:var(--surface-2);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.col h3{display:flex;justify-content:space-between;padding:2px 4px}
+.ocard{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;cursor:pointer;text-align:left}
+.ocard:hover{border-color:var(--accent)}
+.ocard b{font-size:15px}
+.mapbox{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface-2)}
+.mapbox svg{display:block;width:100%;height:auto}
+.dot{cursor:pointer}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px}
+.legend label{display:inline-flex;gap:6px;align-items:center;cursor:pointer}
+.sw{width:12px;height:12px;border-radius:50%;display:inline-block}
+.prog{height:8px;background:var(--surface-2);border-radius:999px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--good)}
+.cl{display:flex;flex-direction:column;gap:4px;margin:0;padding:0;list-style:none;font-size:14px}
+.cl li{display:flex;gap:8px;align-items:center}
+.ok-i{color:var(--good);font-weight:700}
+.no-i{color:var(--bad);font-weight:700}
+#modal{position:fixed;inset:0;background:var(--shade);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+.dlg{background:var(--surface);color:var(--fg);border-radius:14px;width:100%;max-width:540px;max-height:calc(100vh - 32px);overflow:auto;padding:20px 22px;display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.dlg h2{font-size:18px}
+.dlg .foot{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:60;max-width:calc(100% - 32px);font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.note{font-size:13px;color:var(--muted);background:var(--surface-2);border-radius:8px;padding:10px 12px;line-height:1.6}
+@media (max-width:820px){
+  .app{flex-direction:column}
+  .side{width:auto;height:auto;position:sticky;top:env(safe-area-inset-top,0px);z-index:20;flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap;padding-block:10px;padding-right:max(16px,env(safe-area-inset-right,0px));border-right:0;border-bottom:1px solid var(--line);gap:10px}
+  body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
+  .brand span,.rolebox label,.sidefoot{display:none}
+  .rolebox select{max-width:58vw}
+  #nav{position:fixed;left:0;right:0;bottom:0;z-index:25;flex-direction:row;overflow-x:auto;background:var(--surface);border-top:1px solid var(--line);padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px));gap:4px}
+  .nv{flex:1 0 auto;height:44px;font-size:14px;justify-content:center}
+  main{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+  #toast{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+}
+@media (prefers-reduced-motion:no-preference){.dlg{animation:pop .16s ease-out}@keyframes pop{from{transform:translateY(6px);opacity:.6}to{transform:none;opacity:1}}}
+</style>
+
+<div class="app">
+  <aside class="side">
+    <div class="brand"><b>锐兴</b><span>新系统演示版</span></div>
+    <div class="rolebox">
+      <label for="role">切换演示身份</label>
+      <select id="role"></select>
+    </div>
+    <nav id="nav" aria-label="主菜单"></nav>
+    <div class="sidefoot">
+      <div>数据全部为虚构的演示数据，"今天"按 2026 年 10 月 19 日计算。</div>
+      <div>所有操作只保存在当前页面，刷新即恢复。</div>
+      <button class="btn sm" data-act="reset" type="button">重置演示数据</button>
+    </div>
+  </aside>
+  <main id="main"></main>
+</div>
+<div id="modal" hidden></div>
+<div id="toast" role="status" hidden></div>
+
+<script>
+/* ================= 基础工具 ================= */
+const TODAY='2026-10-19';
+const dn=s=>{const[y,m,d]=s.split('-').map(Number);return Date.UTC(y,m-1,d)/864e5};
+const nd=n=>new Date(n*864e5).toISOString().slice(0,10);
+const T=dn(TODAY);
+const addD=(s,k)=>nd(dn(s)+k);
+const md=s=>{const p=s.split('-');return (+p[1])+'月'+(+p[2])+'日'};
+const WK=['周日','周一','周二','周三','周四','周五','周六'];
+const wk=s=>WK[new Date(dn(s)*864e5).getUTCDay()];
+const h=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num=n=>Math.round(n).toLocaleString('zh-CN');
+const yuan=n=>(n<0?'−¥':'¥')+Math.abs(Math.round(n)).toLocaleString('zh-CN');
+const pct=(a,b)=>b?(a/b*100).toFixed(1)+'%':'—';
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const sum=(arr,f)=>arr.reduce((s,x)=>s+f(x),0);
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+let R=rng(20261019);
+const pick=a=>a[Math.floor(R()*a.length)];
+const ri=(a,b)=>a+Math.floor(R()*(b-a+1));
+function wpick(o){let s=0;for(const k in o)s+=o[k];let r=R()*s;for(const k in o){r-=o[k];if(r<=0)return k}return Object.keys(o)[0]}
+
+/* ================= 业务常量 ================= */
+const CITIES=['绵阳','重庆','常州','成都','苏州','自贡'];
+const CITY_W={绵阳:4.2,重庆:3,常州:1.6,成都:2,苏州:2,自贡:1};
+const REFUND_P={绵阳:.3,重庆:.26,常州:.48,成都:.38,苏州:.32,自贡:.07};
+const CHANNELS=['抖音','闲鱼','小红书','代发抖音小红书','转介绍','库存客户'];
+const PAID=['抖音','闲鱼','小红书','代发抖音小红书'];
+const CH_W={抖音:38,闲鱼:28,小红书:8,代发抖音小红书:4,转介绍:7,库存客户:15};
+const CH_DEAL={抖音:1,闲鱼:.8,小红书:1.05,代发抖音小红书:.9,转介绍:1.5,库存客户:1.2};
+const MONTHS=['2026-08','2026-09','2026-10'];
+const MLABEL={'2026-08':'8 月','2026-09':'9 月','2026-10':'10 月（至 19 日）'};
+const DISTRICTS={
+  绵阳:[['涪城区',8,6],['游仙区',13.5,4.5],['高新区',4.5,9.5],['经开区',12,10.5],['科创园',16.5,8]],
+  重庆:[['渝中区',9,7],['江北区',11.5,3.8],['南岸区',12.5,10.5],['沙坪坝区',4.5,5.5],['九龙坡区',5,10.5]],
+  常州:[['天宁区',11,6.5],['钟楼区',7,7],['新北区',9,3],['武进区',10,11]],
+  成都:[['锦江区',12,7.5],['武侯区',8,10],['高新区',11,11.5],['金牛区',7.5,4.5],['成华区',13.5,4.5]],
+  苏州:[['姑苏区',7.5,7],['工业园区',13.5,7],['吴中区',9,11],['相城区',9,3]],
+  自贡:[['自流井区',8,7],['大安区',12.5,5.5],['贡井区',4.5,8],['沿滩区',12,10.5]]
+};
+const COMMUNITIES=['翠湖花园','锦江苑','东辰府','南河苑','桃园小区','滨江一号','绿城玉园','书香名邸','学府雅居','香榭里','金桂园','望江台','和平新村','御景湾','文昌苑','云顶华府','清水湾','长乐小区'];
+const SURN='王李张刘陈杨黄赵吴周徐孙马朱胡郭何林罗高梁宋郑谢韩唐冯许邓曹彭曾田董潘袁蔡蒋余杜叶程魏苏吕丁任沈姚卢姜崔钟谭陆汪范金石廖贾夏韦方白邹孟熊秦邱江尹薛段雷侯龙史陶黎贺顾毛郝龚邵万严武戴孔向汤'.split('');
+const GIVEN=['子涵','一诺','欣怡','梓萱','浩然','宇轩','思远','雨桐','子墨','俊熙','可馨','诗涵','皓轩','梓睿','语桐','博文','嘉怡','明哲','若曦','天佑'];
+const TGIVEN=['佳怡','雪','文静','晓东','思琪','磊','婷婷','宇','晨曦','慧','志强','丹','欣然','浩','梦瑶','俊','琳','鑫','倩','涛'];
+const GRADES=['一年级','二年级','三年级','四年级','五年级','六年级','初一','初二','初三','高一','高二','高三'];
+const SUBJ=['数学','英语','语文','物理','化学','全科辅导'];
+const LEVELS=['小学','初中','高中'];
+const level=g=>{const i=GRADES.indexOf(g);return i<6?'小学':i<9?'初中':'高中'};
+const STAGES=['已联系','已加微信','已报价'];
+const INTERVALS={'已联系':[3,7],'已加微信':[3,7,14],'已报价':[3,7,30]};
+const REASONS={试课不满意:34,家长时间变动:22,老师临时取消:14,价格原因:16,孩子不愿意:14};
+const FTEXT={'已联系':['电话打通，家长想先了解收费','微信语音沟通了孩子的情况','家长在上班，约好晚上再聊','介绍了上门辅导的流程'],
+  '已加微信':['已加微信，发了老师介绍','家长看了资料，还在比较','发了两位老师的简历给家长','家长问能不能周末上课'],
+  '已报价':['报了价格，家长在考虑','家长觉得价格可以，等周末定时间','和另一家对比后倾向我们','约了试课时间待确认']};
+const FREPEAT=['再次联系，家长说这周忙','发了试听安排，家长已读','家长说下周再定','提醒家长考试前可以加课'];
+const STATUS_CLS={新线索:'blue',已联系:'',已加微信:'violet',已报价:'orange',已成交:'green',已退费:'red',流失:''};
+const OPEN=['新线索','已联系','已加微信','已报价'];
+
+const STAFF=[
+  {id:'u1',name:'王雨',role:'客服',cities:['绵阳']},
+  {id:'u2',name:'李晨',role:'客服',cities:['重庆']},
+  {id:'u3',name:'赵琳',role:'客服',cities:['苏州']},
+  {id:'u4',name:'张敏',role:'城市主管',cities:['绵阳','自贡']},
+  {id:'u5',name:'刘洋',role:'城市主管',cities:['重庆']},
+  {id:'u6',name:'周婷',role:'城市主管',cities:['常州','苏州']},
+  {id:'u7',name:'陈浩',role:'城市主管',cities:['成都']},
+  {id:'u8',name:'吴凡',role:'流量运营'},
+  {id:'u9',name:'孙悦',role:'流量运营'},
+  {id:'u10',name:'郑可',role:'招聘'},
+  {id:'u11',name:'何静',role:'行政助理'},
+  {id:'u0',name:'老板',role:'老板'}
+];
+const SBY={};STAFF.forEach(s=>{s.active=true;SBY[s.id]=s});
+const OWN={绵阳:['u1','u1','u4'],自贡:['u4'],重庆:['u2','u2','u5'],苏州:['u3','u3','u6'],常州:['u6'],成都:['u7']};
+const DEMO={
+  cs:{uid:'u1',label:'客服 · 王雨（绵阳）'},
+  sup:{uid:'u4',label:'城市主管 · 张敏（绵阳、自贡）'},
+  boss:{uid:'u0',label:'老板'},
+  admin:{uid:'u11',label:'行政助理 · 何静'}
+};
+const NAV={
+  cs:[['todo','今日待办'],['customers','我的客户'],['orders','派单'],['teachers','老师'],['map','地图'],['mine','我的数据']],
+  sup:[['todo','今日待办'],['customers','辖区客户'],['orders','派单'],['teachers','老师'],['map','地图'],['analytics','数据分析'],['team','团队数据']],
+  boss:[['analytics','数据分析'],['staffdata','员工数据'],['customers','客户查询'],['orders','派单'],['teachers','老师'],['map','地图']],
+  admin:[['staffdata','员工数据'],['teachers','老师'],['accounts','账号管理']]
+};
+
+/* ================= 生成演示数据 ================= */
+let leads,deals,orders,teachers,costs,LBY,DBY,OBY,TBY,lid,did,oid,tid,usedPhones;
+const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+function phoneGen(){return '1'+pick(['3','5','7','8','9'])+ri(0,9)+String(ri(0,99999999)).padStart(8,'0')}
+function uniqPhone(){let p;do{p=phoneGen()}while(usedPhones.has(p));usedPhones.add(p);return p}
+const mask=p=>p.slice(0,3)+'****'+p.slice(7);
+function place(city,dname){
+  const ds=DISTRICTS[city];const d=dname?ds.find(x=>x[0]===dname)||ds[0]:pick(ds);
+  return {district:d[0],x:+clamp(d[1]+(R()-.5)*4.6,.4,19.6).toFixed(2),y:+clamp(d[2]+(R()-.5)*3.6,.4,13.6).toFixed(2)};
+}
+function nextDueInfo(L,status,fromDate){
+  const arr=INTERVALS[status];if(!arr)return null;
+  const k=L.followups.filter(f=>f.status===status).length;
+  const n=arr[Math.min(k,arr.length-1)];
+  return {date:addD(fromDate,n),n,k:k+1};
+}
+function makeTeacher(city,extra){
+  const sur=pick(SURN);
+  const type=wpick({在校大学生:5,专职教师:3,在职教师:2});
+  const subjects=[pick(SUBJ.slice(0,5))];if(R()<.45){const s=pick(SUBJ.slice(0,5));if(!subjects.includes(s))subjects.push(s)}
+  const lv=LEVELS.filter(()=>R()<.55);if(!lv.length)lv.push(pick(LEVELS));
+  const p=place(city);
+  const t={id:'T'+(++tid),name:sur+pick(TGIVEN),city,type,subjects,levels:LEVELS.filter(x=>lv.includes(x)),...p,
+    status:wpick({可接单:7,已排满:2,暂停接单:1}),phone:uniqPhone(),edu:type==='在校大学生'?pick(['师范类本科在读','理工类本科在读','研究生在读']):pick(['本科','硕士','师范类本科']),
+    address:p.district+pick(COMMUNITIES)+'附近',hasAddress:R()>.1,hasType:R()>.12,entered:addD(TODAY,-ri(1,120)),by:pick(['u10','u10','u4','u1','u11'])};
+  Object.assign(t,extra||{});
+  teachers.push(t);TBY[t.id]=t;return t;
+}
+function completeness(t){
+  return [['联系方式',!!t.phone],['详细地址',!!t.hasAddress],['年级',t.levels.length>0],['科目',t.subjects.length>0],['老师类型',!!t.hasType]];
+}
+function makeDeal(L,day,o){
+  o=o||{};
+  const tl=teachers.filter(t=>t.city===L.city);
+  const D={id:'D'+(++did),leadId:L.id,city:L.city,channel:L.channel,owner:L.owner,date:day,
+    fee:o.fee!=null?o.fee:Math.round((L.channel==='转介绍'?330:L.channel==='库存客户'?270:290)*(.55+R()*.9)/10)*10,
+    teacherId:o.teacherId||(tl.length?pick(tl).id:null),student:o.student||L.child.name,refund:null,v7:false,v30:false};
+  deals.push(D);DBY[D.id]=D;L.dealIds.push(D.id);L.status='已成交';L.nextDue=null;
+  L.followups.push({date:day,status:'已成交',by:o.by||L.owner,text:o.text||'家长确认老师，录入成交'});
+  return D;
+}
+function makeOrder(L,o){
+  o=o||{};
+  const O={id:'O'+(++oid),leadId:L.id,city:L.city,subject:L.subject,grade:L.child.grade,level:level(L.child.grade),
+    schedule:o.schedule||pick(['周六上午 2 小时','周日下午 2 小时','工作日晚上 1.5 小时','周末时间可商量']),price:o.price||pick([80,100,120,150]),
+    created:o.created||TODAY,pushes:[],dealId:null};
+  orders.push(O);OBY[O.id]=O;L.orderId=O.id;return O;
+}
+function candidates(O){
+  const L=LBY[O.leadId];
+  return teachers.filter(t=>t.city===O.city).map(t=>{
+    const subj=O.subject==='全科辅导'?t.levels.includes('小学'):t.subjects.includes(O.subject);
+    const lvl=t.levels.includes(O.level);const free=t.status==='可接单';
+    return {t,d:dist(t,L),subj,lvl,free,score:(subj?2:0)+(lvl?1:0)+(free?1.5:0)};
+  }).sort((a,b)=>b.score-a.score||a.d-b.d);
+}
+function orderStatus(O){
+  if(O.dealId)return '已成交';
+  if(O.pushes.some(p=>p.status==='试课成功'))return '待录成交';
+  if(O.pushes.some(p=>p.status==='已约试课'))return '试课中';
+  if(O.pushes.length)return '已推送';
+  return '待匹配';
+}
+function makeLead(day,city){
+  const age=T-dn(day);
+  const ch=wpick(CH_W),owner=pick(OWN[city]),p=place(city),sur=pick(SURN);
+  const L={id:'L'+(++lid),date:day,city,channel:ch,owner,...p,parent:sur+(R()<.78?'女士':'先生'),phone:uniqPhone(),
+    child:{name:sur+pick(GIVEN),grade:pick(GRADES)},subject:pick(SUBJ),address:p.district+pick(COMMUNITIES)+ri(1,24)+'栋',
+    followups:[],status:'新线索',reached:0,lastFollow:null,nextDue:null,dealIds:[],orderId:null};
+  leads.push(L);LBY[L.id]=L;
+  let r=0;
+  if(age>=1||R()<.45){if(R()<.9){r=1;if(age>=1&&R()<.76){r=2;if(age>=2&&R()<.8)r=3}}}
+  let f=dn(day);
+  for(let i=1;i<=r;i++){if(i>1)f=Math.min(T,f+ri(1,3));L.followups.push({date:nd(f),status:STAGES[i-1],by:owner,text:pick(FTEXT[STAGES[i-1]])})}
+  L.reached=r;
+  if(r===3&&R()<.62*CH_DEAL[ch]){
+    const x=f+ri(1,10);
+    if(x<T){
+      const D=makeDeal(L,nd(x));
+      if(R()<REFUND_P[city]){const rd=x+ri(1,18);if(rd<=T){D.refund={date:nd(rd),amount:Math.round(D.fee*pick([1,1,.8,.6,.5])),reason:wpick(REASONS)};L.status='已退费';L.followups.push({date:nd(rd),status:'已退费',by:owner,text:'办理退费：'+D.refund.reason})}}
+      const a=T-x;if(!D.refund){if(a>=8&&R()<.85)D.v7=true;if(a>=31&&R()<.85)D.v30=true}
+      return;
+    }
+  }
+  if(r===0){if(age>4)L.status='流失';return}
+  L.status=STAGES[r-1];L.lastFollow=L.followups[r-1].date;
+  if(age>24&&R()<.85){L.status='流失';L.followups.push({date:addD(L.lastFollow,ri(3,8)),status:'流失',by:owner,text:'家长已找到其他老师'});return}
+  let due=dn(nextDueInfo(L,L.status,L.lastFollow).date);
+  while(due<T-ri(0,2)&&R()<.72){L.followups.push({date:nd(due),status:L.status,by:owner,text:pick(FREPEAT)});L.lastFollow=nd(due);due=dn(nextDueInfo(L,L.status,L.lastFollow).date)}
+  L.nextDue=nd(due);
+}
+function genAll(){
+  R=rng(20261019);
+  leads=[];deals=[];orders=[];teachers=[];costs=[];LBY={};DBY={};OBY={};TBY={};lid=0;did=0;oid=0;tid=0;usedPhones=new Set();
+  for(const c of CITIES){const n=c==='绵阳'?36:ri(12,18);for(let i=0;i<n;i++)makeTeacher(c)}
+  for(let n=dn('2026-08-01');n<=T;n++){
+    const day=nd(n);
+    for(const c of CITIES){
+      const cnt=Math.round(CITY_W[c]*(.55+R()*.9)*(n<dn('2026-08-25')?.6:1)*(n===T?.5:1));
+      for(let k=0;k<cnt;k++)makeLead(day,c);
+    }
+  }
+  for(const L of leads){
+    if((L.status==='已加微信'||L.status==='已报价')&&dn(L.date)>=T-16&&R()<.65){
+      const O=makeOrder(L,{created:addD(L.lastFollow||L.date,0)});
+      const st=wpick({待匹配:3,已推送:4,试课中:2,试课成功:1});
+      if(st==='待匹配')continue;
+      const cs=candidates(O).slice(0,6);
+      const k=st==='已推送'?ri(1,3):ri(1,2);
+      for(let i=0;i<k&&i<cs.length;i++){
+        let s='已推送';
+        if(st==='已推送')s=wpick({已推送:3,有意向:2,已拒绝:1});
+        else if(i===0)s=st==='试课中'?'已约试课':'试课成功';
+        else s='已拒绝';
+        O.pushes.push({teacherId:cs[i].t.id,status:s,date:O.created});
+      }
+    }
+  }
+  for(const m of MONTHS)for(const c of CITIES)for(const ch of PAID){
+    const base={闲鱼:250,抖音:60,小红书:18,代发抖音小红书:55}[ch]*CITY_W[c];
+    let v=base*(.75+R()*.5)*(m==='2026-10'?19/31:1)*(m==='2026-08'?.8:1);
+    if(c==='成都'&&ch==='闲鱼')v*=2.4;
+    costs.push({month:m,city:c,channel:ch,amount:Math.round(v),by:R()<.5?'u8':'u9'});
+  }
+}
+genAll();
+
+/* ================= 状态与权限 ================= */
+const S={uk:'cs',page:'todo',id:null,hist:[],tab:'overview',m:'2026-09',city:'全部',person:'',chView:'channel',
+  q:'',qStatus:'',qOwner:'',qCity:'',tq:'',tSubj:'',tStatus:'',mapCity:'',layers:{p:true,d:false,t:true,o:true},mapSel:null,staffSel:'',ops:{}};
+const me=()=>SBY[DEMO[S.uk].uid];
+function scopeCities(){const u=me();return u.cities||CITIES}
+function canSeeLead(L){const u=me();if(u.role==='客服')return L.owner===u.id;if(u.role==='城市主管')return u.cities.includes(L.city);return true}
+const canSeeTeacher=t=>scopeCities().includes(t.city);
+const ownersIn=cities=>STAFF.filter(s=>(s.role==='客服'||s.role==='城市主管')&&s.cities.some(c=>cities.includes(c)));
+
+/* ================= 今日待办 ================= */
+function tasks(uid){
+  uid=uid||me().id;
+  const mine=leads.filter(l=>l.owner===uid);
+  const fresh=mine.filter(l=>l.status==='新线索').sort((a,b)=>a.date<b.date?-1:1);
+  const due=mine.filter(l=>l.nextDue&&l.nextDue<=TODAY&&OPEN.includes(l.status)).sort((a,b)=>a.nextDue<b.nextDue?-1:1);
+  const visits=[];
+  for(const d of deals){
+    if(d.owner!==uid||d.refund)continue;
+    const a=T-dn(d.date);
+    if(a>=7&&a<=20&&!d.v7)visits.push({d,kind:'成交 7 天回访',k:'v7'});
+    else if(a>=30&&a<=45&&!d.v30)visits.push({d,kind:'成交 30 天回访',k:'v30'});
+  }
+  return {fresh,due,visits};
+}
+const chip=(t,c)=>`<span class="chip ${c||''}">${h(t)}</span>`;
+const stChip=s=>chip(s,STATUS_CLS[s]);
+const empty=t=>`<div class="empty">${h(t)}</div>`;
+function leadRow(L,kind){
+  let due='',cls='';
+  if(kind==='fresh'){const a=T-dn(L.date);due=a===0?'今天进线':a===1?'昨天进线':a+' 天未联系';cls=a>=2?'bad':a===1?'warn':''}
+  else{const a=T-dn(L.nextDue);due=a===0?'今天到期':'超期 '+a+' 天';cls=a>0?'bad':'warn'}
+  return `<div class="row" data-act="cust" data-id="${L.id}">
+    <div class="rmain"><div class="rtitle"><button class="link" data-act="cust" data-id="${L.id}">${h(L.parent)}</button>${stChip(L.status)}${chip(L.channel)}</div>
+    <div class="rsub">${h(L.child.grade)} · ${h(L.subject)} · ${h(L.district)}${L.lastFollow?' · 上次跟进 '+md(L.lastFollow):''}</div></div>
+    <div class="rdue ${cls}">${due}</div>
+    <div class="ract"><button class="btn sm primary" data-act="follow" data-id="${L.id}">${kind==='fresh'?'首次跟进':'记跟进'}</button></div></div>`;
+}
+function pageTodo(){
+  const {fresh,due,visits}=tasks();const over=due.filter(l=>l.nextDue<TODAY).length;
+  return `<div class="ph"><div><div class="eyebrow">${md(TODAY)} ${wk(TODAY)} · ${h(me().name)}</div><h1>今日待办</h1></div>
+    <div class="btns"><button class="btn" data-act="newlead">＋ 新建客户</button></div></div>
+    <div class="chips">${chip('新线索 '+fresh.length,'blue')}${chip('到期跟进 '+due.length+(over?'（超期 '+over+'）':''),over?'red':'orange')}${chip('老客回访 '+visits.length,'green')}</div>
+    <section class="card"><div class="cardhead"><h2>新线索 <span class="muted">尽快完成首次联系</span></h2></div>
+      <div>${fresh.length?fresh.map(l=>leadRow(l,'fresh')).join(''):empty('没有待联系的新线索')}</div></section>
+    <section class="card"><div class="cardhead"><h2>到期跟进 <span class="muted">系统按跟进规则自动排期</span></h2></div>
+      <div>${due.length?due.map(l=>leadRow(l,'due')).join(''):empty('今天没有到期的跟进')}</div></section>
+    <section class="card"><div class="cardhead"><h2>老客回访 <span class="muted">成交后第 7 天、第 30 天</span></h2></div>
+      <div>${visits.length?visits.map(v=>{const L=LBY[v.d.leadId];const t=TBY[v.d.teacherId];
+        return `<div class="row" data-act="cust" data-id="${L.id}"><div class="rmain"><div class="rtitle"><button class="link" data-act="cust" data-id="${L.id}">${h(L.parent)}</button>${chip(v.kind,'green')}</div>
+        <div class="rsub">学生 ${h(v.d.student)} · 老师 ${h(t?t.name:'—')} · 成交于 ${md(v.d.date)}</div></div>
+        <div class="ract"><button class="btn sm" data-act="visit" data-id="${v.d.id}" data-k="${v.k}">完成回访</button></div></div>`}).join(''):empty('今天没有需要回访的老客户')}</div></section>
+    <p class="note">跟进规则：已联系按 3、7 天；已加微信按 3、7、14 天；已报价按 3、7、30 天排下一次。成交、退费或流失后自动停止。</p>`;
+}
+
+/* ================= 客户 ================= */
+function pageCustomers(){
+  const u=me();const isCs=u.role==='客服';
+  let list=leads.filter(canSeeLead);
+  const q=S.q.trim();
+  if(q)list=list.filter(l=>l.parent.includes(q)||l.phone.includes(q)||l.address.includes(q)||l.child.name.includes(q));
+  if(S.qStatus)list=list.filter(l=>l.status===S.qStatus);
+  if(S.qOwner)list=list.filter(l=>l.owner===S.qOwner);
+  if(S.qCity)list=list.filter(l=>l.city===S.qCity);
+  list.sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:0);
+  const owners=ownersIn(scopeCities());
+  const title=isCs?'我的客户':u.role==='城市主管'?'辖区客户':'客户查询';
+  return `<div class="ph"><div><div class="eyebrow">${isCs?'只显示分配给你的客户':u.role==='城市主管'?'辖区：'+u.cities.join('、'):'全公司'}</div><h1>${title}</h1></div>
+    ${u.role!=='老板'?'<div class="btns"><button class="btn primary" data-act="newlead">＋ 新建客户</button></div>':''}</div>
+    <div class="card"><div class="filters">
+      <div class="fld" style="flex:1 1 220px"><label for="q">搜索</label><input id="q" type="search" data-bind="q" value="${h(S.q)}" placeholder="家长、孩子、手机号、小区"></div>
+      <div class="fld"><label for="qStatus">状态</label><select id="qStatus" data-bind="qStatus"><option value="">全部</option>${['新线索','已联系','已加微信','已报价','已成交','已退费','流失'].map(s=>`<option ${S.qStatus===s?'selected':''}>${s}</option>`).join('')}</select></div>
+      ${isCs?'':`<div class="fld"><label for="qCity">城市</label><select id="qCity" data-bind="qCity"><option value="">全部</option>${scopeCities().map(c=>`<option ${S.qCity===c?'selected':''}>${c}</option>`).join('')}</select></div>
+      <div class="fld"><label for="qOwner">负责人</label><select id="qOwner" data-bind="qOwner"><option value="">全部</option>${owners.map(s=>`<option value="${s.id}" ${S.qOwner===s.id?'selected':''}>${s.name}</option>`).join('')}</select></div>`}
+    </div>
+    <div class="tw"><table class="t"><thead><tr><th>家长</th><th>孩子</th><th>状态</th><th>渠道</th>${isCs?'':'<th>城市</th><th>负责人</th>'}<th>区域</th><th>下次跟进</th><th>进线</th></tr></thead><tbody>
+    ${list.slice(0,60).map(l=>`<tr class="click" data-act="cust" data-id="${l.id}"><td><button class="link" data-act="cust" data-id="${l.id}">${h(l.parent)}</button></td><td>${h(l.child.grade)} ${h(l.subject)}</td><td>${stChip(l.status)}</td><td>${h(l.channel)}</td>${isCs?'':`<td>${l.city}</td><td>${SBY[l.owner].name}</td>`}<td>${h(l.district)}</td><td class="${l.nextDue&&l.nextDue<TODAY?'rdue bad':''}">${l.nextDue?md(l.nextDue):'—'}</td><td>${md(l.date)}</td></tr>`).join('')}
+    </tbody></table></div>
+    <p class="hint">共 ${list.length} 位客户${list.length>60?'，显示最近 60 位，可用搜索缩小范围':''}</p></div>`;
+}
+function miniMap(center,pts,radius){
+  const r=radius+0.6;const vb=`${(center.x-r).toFixed(2)} ${(center.y-r).toFixed(2)} ${(2*r).toFixed(2)} ${(2*r).toFixed(2)}`;
+  return `<div class="mapbox"><svg viewBox="${vb}" role="img" aria-label="周边 ${radius} 公里示意图">
+    <rect x="${center.x-r}" y="${center.y-r}" width="${2*r}" height="${2*r}" style="fill:var(--surface-2)"></rect>
+    <circle cx="${center.x}" cy="${center.y}" r="${radius}" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:.04;stroke-dasharray:.15 .12"></circle>
+    ${pts.map(p=>`<circle class="dot" data-act="${p.act}" data-id="${p.id}" cx="${p.x}" cy="${p.y}" r=".16" style="fill:${p.color};stroke:var(--surface);stroke-width:.05"><title>${h(p.label)}</title></circle>`).join('')}
+    <circle cx="${center.x}" cy="${center.y}" r=".26" style="fill:var(--fg);stroke:var(--surface);stroke-width:.07"></circle>
+    <text x="${center.x-r+.2}" y="${center.y+r-.25}" style="fill:var(--muted);font-size:.38px">虚线圈 = ${radius} 公里</text>
+  </svg></div>`;
+}
+function pageCust(){
+  const L=LBY[S.id];
+  if(!L)return empty('找不到这位客户');
+  if(!canSeeLead(L))return `<button class="link" data-act="back">← 返回</button><div class="card"><h2>没有权限查看</h2><p class="hint">这位客户不在你的客户池里。</p></div>`;
+  const O=L.orderId?OBY[L.orderId]:null;
+  const myDeals=L.dealIds.map(id=>DBY[id]);
+  const canRefund=myDeals.some(d=>!d.refund);
+  const near=teachers.filter(t=>t.city===L.city).map(t=>({t,d:dist(t,L),subj:L.subject==='全科辅导'?t.levels.includes('小学'):t.subjects.includes(L.subject),lvl:t.levels.includes(level(L.child.grade))}))
+    .sort((a,b)=>((b.subj?2:0)+(b.lvl?1:0)+(b.t.status==='可接单'?1.5:0))-((a.subj?2:0)+(a.lvl?1:0)+(a.t.status==='可接单'?1.5:0))||a.d-b.d).slice(0,6);
+  const nearP=leads.filter(x=>x.id!==L.id&&x.city===L.city&&canSeeLead(x)&&dist(x,L)<=3).sort((a,b)=>dist(a,L)-dist(b,L));
+  const pushOf=t=>O?O.pushes.find(p=>p.teacherId===t.id):null;
+  const pts=[...near.map(n=>({x:n.t.x,y:n.t.y,color:'var(--good)',act:'teacher',id:n.t.id,label:n.t.name+' 老师'})),
+             ...nearP.slice(0,12).map(p=>({x:p.x,y:p.y,color:'var(--accent)',act:'cust',id:p.id,label:p.parent}))];
+  const live=OPEN.includes(L.status);
+  return `<button class="link" data-act="back">← 返回</button>
+  <div class="ph"><div><div class="eyebrow">${L.city} · ${h(L.district)} · ${h(L.channel)} · ${md(L.date)} 进线 · 负责人 ${SBY[L.owner].name}</div><h1>${h(L.parent)} ${stChip(L.status)}</h1></div>
+    <div class="btns">
+      <button class="btn primary" data-act="follow" data-id="${L.id}">记跟进</button>
+      <button class="btn" data-act="toorder" data-id="${L.id}">派单找老师</button>
+      <button class="btn" data-act="deal" data-id="${L.id}">录成交</button>
+      <button class="btn" data-act="refund" data-id="${L.id}" ${canRefund?'':'disabled title="没有可退费的成交"'}>办退费</button>
+    </div></div>
+  <div class="grid2">
+    <div class="stack">
+      <section class="card"><h2>客户资料</h2>
+        <dl class="kv"><dt>手机</dt><dd>${mask(L.phone)}</dd><dt>孩子</dt><dd>${h(L.child.name)} · ${h(L.child.grade)}</dd><dt>需求科目</dt><dd>${h(L.subject)}</dd>
+        <dt>上课地址</dt><dd>${h(L.address)}</dd><dt>下次跟进</dt><dd>${L.nextDue?`<span class="${L.nextDue<TODAY?'rdue bad':''}">${md(L.nextDue)}</span>`:live?'—':'已停止（'+L.status+'）'}</dd></dl></section>
+      ${O?`<section class="card"><div class="cardhead"><h2>派单进度 ${chip(orderStatus(O),'orange')}</h2><button class="btn sm" data-act="order" data-id="${O.id}">打开派单</button></div>
+        ${O.pushes.length?`<div class="tw"><table class="t"><tbody>${O.pushes.map(p=>`<tr><td>${h(TBY[p.teacherId].name)} 老师</td><td>${chip(p.status,p.status==='已拒绝'||p.status==='试课失败'?'red':p.status==='试课成功'?'green':'blue')}</td><td class="n">${md(p.date)}</td></tr>`).join('')}</tbody></table></div>`:empty('还没有推送老师，在右侧"附近老师"里一键推送')}</section>`:''}
+      ${myDeals.length?`<section class="card"><h2>成交记录</h2><div class="tw"><table class="t"><thead><tr><th>成交日</th><th>学生</th><th>老师</th><th class="n">信息费</th><th>退费</th></tr></thead><tbody>
+        ${myDeals.map(d=>`<tr><td>${md(d.date)}</td><td>${h(d.student)}</td><td>${h(TBY[d.teacherId]?TBY[d.teacherId].name:'—')}</td><td class="n">${yuan(d.fee)}</td><td>${d.refund?chip('退 '+yuan(d.refund.amount)+' · '+d.refund.reason,'red'):'—'}</td></tr>`).join('')}</tbody></table></div></section>`:''}
+      <section class="card"><h2>跟进记录 <span class="muted">${L.followups.length} 条</span></h2>
+        <div class="timeline">${L.followups.slice().reverse().map(f=>`<div class="ti"><div class="d">${md(f.date)}</div><div><div class="chips">${chip(f.status,STATUS_CLS[f.status]||'')}<span class="muted">${h(SBY[f.by]?SBY[f.by].name:'')}</span></div><p>${h(f.text)}</p></div></div>`).join('')||empty('还没有跟进记录')}</div></section>
+    </div>
+    <div class="stack">
+      <section class="card"><div class="cardhead"><h2>附近老师</h2><span class="muted">按匹配度和距离排序</span></div>
+        <div>${near.map(n=>{const p=pushOf(n.t);return `<div class="row" data-act="teacher" data-id="${n.t.id}"><div class="rmain"><div class="rtitle"><button class="link" data-act="teacher" data-id="${n.t.id}">${h(n.t.name)}</button>${chip(n.t.status,n.t.status==='可接单'?'green':'')}</div>
+          <div class="rsub">${h(n.t.type)} · ${n.t.subjects.join('/')} · ${n.t.levels.join('/')}</div>
+          <div class="chips">${n.subj?chip('科目匹配','blue'):chip('科目不符')}${n.lvl?chip('学段匹配','blue'):''}</div></div>
+          <div class="rdue">${n.d.toFixed(1)} km</div>
+          <div class="ract">${p?chip(p.status,'violet'):`<button class="btn sm primary" data-act="push" data-lead="${L.id}" data-t="${n.t.id}">推送</button>`}</div></div>`}).join('')}</div></section>
+      <section class="card"><div class="cardhead"><h2>附近家长</h2><span class="muted">3 公里内 ${nearP.length} 位${me().role==='客服'?'（只含你的客户）':''}</span></div>
+        ${nearP.length?`<p class="hint">同一片区的家长可以安排同一位老师连排上课。</p><div>${nearP.slice(0,5).map(p=>`<div class="row" data-act="cust" data-id="${p.id}"><div class="rmain"><div class="rtitle"><button class="link" data-act="cust" data-id="${p.id}">${h(p.parent)}</button>${stChip(p.status)}</div><div class="rsub">${h(p.child.grade)} · ${h(p.subject)} · ${h(p.district)}</div></div><div class="rdue">${dist(p,L).toFixed(1)} km</div></div>`).join('')}</div>`:empty('3 公里内没有其他家长')}
+        ${miniMap(L,pts,3)}
+        <div class="legend"><span><i class="sw" style="background:var(--fg)"></i> 本客户</span><span><i class="sw" style="background:var(--good)"></i> 老师</span><span><i class="sw" style="background:var(--accent)"></i> 家长</span></div>
+      </section>
+    </div>
+  </div>`;
+}
+
+/* ================= 派单 ================= */
+const PUSH_NEXT={已推送:['有意向','已拒绝'],有意向:['已约试课','已拒绝'],已约试课:['试课成功','试课失败']};
+const pushCls=s=>s==='已拒绝'||s==='试课失败'?'red':s==='试课成功'?'green':s==='已约试课'?'orange':'blue';
+function pageOrders(){
+  const vis=orders.filter(o=>canSeeLead(LBY[o.leadId]));
+  const cols=['待匹配','已推送','试课中','待录成交'];
+  const done=vis.filter(o=>orderStatus(o)==='已成交').length;
+  return `<div class="ph"><div><div class="eyebrow">订单 → 匹配老师 → 推送 → 试课 → 成交，每一步一键记录</div><h1>派单</h1></div>${chip('已成交 '+done+' 单','green')}</div>
+  <div class="kanban">${cols.map(c=>{const list=vis.filter(o=>orderStatus(o)===c).sort((a,b)=>a.created<b.created?-1:1);
+    return `<div class="col"><h3><span>${c}</span><span class="muted">${list.length}</span></h3>${list.map(o=>{const L=LBY[o.leadId];const like=o.pushes.filter(p=>p.status!=='已推送'&&p.status!=='已拒绝').length;
+      return `<button class="ocard" data-act="order" data-id="${o.id}"><b>${h(o.grade)} ${h(o.subject)}</b><span class="rsub">${h(L.parent)} · ${h(L.district)}</span><span class="rsub">${h(o.schedule)} · ${o.price} 元/时</span>
+      <span class="chips">${o.pushes.length?chip('已推 '+o.pushes.length+' 位','blue'):chip('等待匹配','orange')}${like?chip(like+' 位有进展','green'):''}${me().role!=='客服'?chip(SBY[L.owner].name):''}</span></button>`}).join('')||'<p class="hint" style="padding:4px">暂无</p>'}</div>`}).join('')}</div>
+  <p class="note">新订单在客户页点"派单找老师"生成。系统会按科目、学段、是否可接单和距离推荐老师。</p>`;
+}
+function pageOrder(){
+  const O=OBY[S.id];if(!O)return empty('找不到订单');
+  const L=LBY[O.leadId];if(!canSeeLead(L))return empty('没有权限查看这个订单');
+  const st=orderStatus(O);const cs=candidates(O).slice(0,10);
+  const pushed=new Set(O.pushes.map(p=>p.teacherId));
+  return `<button class="link" data-act="back">← 返回</button>
+  <div class="ph"><div><div class="eyebrow">订单 ${O.id} · 创建于 ${md(O.created)}</div><h1>${h(O.grade)} ${h(O.subject)} ${chip(st,'orange')}</h1></div>
+    <div class="btns"><button class="btn" data-act="cust" data-id="${L.id}">查看客户</button>${st==='待录成交'?`<button class="btn primary" data-act="deal" data-id="${L.id}" data-t="${(O.pushes.find(p=>p.status==='试课成功')||{}).teacherId||''}">录成交</button>`:''}</div></div>
+  <div class="grid2"><div class="stack">
+    <section class="card"><h2>需求</h2><dl class="kv"><dt>家长</dt><dd>${h(L.parent)}（${h(L.child.name)}）</dd><dt>地址</dt><dd>${h(L.address)}</dd><dt>时间</dt><dd>${h(O.schedule)}</dd><dt>课时费</dt><dd>${O.price} 元/小时</dd></dl></section>
+    <section class="card"><h2>推送进度</h2>${O.pushes.length?`<div>${O.pushes.map((p,i)=>{const t=TBY[p.teacherId];const nx=PUSH_NEXT[p.status]||[];
+      return `<div class="row" data-act="teacher" data-id="${t.id}"><div class="rmain"><div class="rtitle"><button class="link" data-act="teacher" data-id="${t.id}">${h(t.name)}</button>${chip(p.status,pushCls(p.status))}</div><div class="rsub">${md(p.date)} · ${dist(t,L).toFixed(1)} km</div></div>
+      <div class="ract btns">${nx.map(s=>`<button class="btn sm ${s==='试课成功'?'primary':''}" data-act="pstat" data-id="${O.id}" data-i="${i}" data-s="${s}">${s}</button>`).join('')}${p.status==='试课成功'&&!O.dealId?`<button class="btn sm primary" data-act="deal" data-id="${L.id}" data-t="${t.id}">录成交</button>`:''}</div></div>`}).join('')}</div>`:empty('还没有推送，在右侧选择老师一键推送')}</section>
+  </div><div class="stack">
+    <section class="card"><div class="cardhead"><h2>推荐老师</h2><span class="muted">${L.city}</span></div><div>
+    ${cs.map(c=>`<div class="row" data-act="teacher" data-id="${c.t.id}"><div class="rmain"><div class="rtitle"><button class="link" data-act="teacher" data-id="${c.t.id}">${h(c.t.name)}</button>${chip(c.t.status,c.free?'green':'')}</div>
+      <div class="rsub">${h(c.t.type)} · ${c.t.subjects.join('/')} · ${c.t.levels.join('/')}</div><div class="chips">${c.subj?chip('科目匹配','blue'):chip('科目不符')}${c.lvl?chip('学段匹配','blue'):''}</div></div>
+      <div class="rdue">${c.d.toFixed(1)} km</div><div class="ract">${pushed.has(c.t.id)?chip('已推送','violet'):`<button class="btn sm primary" data-act="push" data-o="${O.id}" data-t="${c.t.id}">推送</button>`}</div></div>`).join('')}
+    </div></section></div></div>`;
+}
+
+/* ================= 老师 ================= */
+function pageTeachers(){
+  let list=teachers.filter(canSeeTeacher);
+  const q=S.tq.trim();
+  if(q)list=list.filter(t=>t.name.includes(q)||t.phone.includes(q)||t.address.includes(q));
+  if(S.tSubj)list=list.filter(t=>t.subjects.includes(S.tSubj));
+  if(S.tStatus)list=list.filter(t=>t.status===S.tStatus);
+  list.sort((a,b)=>a.entered<b.entered?1:-1);
+  const u=me();
+  return `<div class="ph"><div><div class="eyebrow">${u.cities?'城市：'+u.cities.join('、'):'全部城市'}</div><h1>老师</h1></div>
+    <div class="btns"><button class="btn primary" data-act="newteacher">＋ 录入老师</button></div></div>
+  <div class="card"><div class="filters">
+    <div class="fld" style="flex:1 1 220px"><label for="tq">搜索</label><input id="tq" type="search" data-bind="tq" value="${h(S.tq)}" placeholder="姓名、手机号、区域"></div>
+    <div class="fld"><label for="tSubj">科目</label><select id="tSubj" data-bind="tSubj"><option value="">全部</option>${SUBJ.slice(0,5).map(s=>`<option ${S.tSubj===s?'selected':''}>${s}</option>`).join('')}</select></div>
+    <div class="fld"><label for="tStatus">接单状态</label><select id="tStatus" data-bind="tStatus"><option value="">全部</option>${['可接单','已排满','暂停接单'].map(s=>`<option ${S.tStatus===s?'selected':''}>${s}</option>`).join('')}</select></div>
+  </div>
+  <div class="tw"><table class="t"><thead><tr><th>姓名</th><th>城市</th><th>类型</th><th>科目</th><th>学段</th><th>区域</th><th>状态</th><th>资料</th></tr></thead><tbody>
+  ${list.slice(0,60).map(t=>{const c=completeness(t).filter(x=>x[1]).length;return `<tr class="click" data-act="teacher" data-id="${t.id}"><td><button class="link" data-act="teacher" data-id="${t.id}">${h(t.name)}</button></td><td>${t.city}</td><td>${h(t.type)}</td><td>${t.subjects.join('/')}</td><td>${t.levels.join('/')}</td><td>${h(t.district)}</td><td>${chip(t.status,t.status==='可接单'?'green':'')}</td><td>${chip(c+'/5',c===5?'green':'orange')}</td></tr>`}).join('')}
+  </tbody></table></div><p class="hint">共 ${list.length} 位老师</p></div>`;
+}
+function pageTeacher(){
+  const t=TBY[S.id];if(!t)return empty('找不到老师');
+  if(!canSeeTeacher(t))return empty('这位老师不在你负责的城市');
+  const cp=completeness(t);const c=cp.filter(x=>x[1]).length;
+  const near=orders.filter(o=>o.city===t.city&&['待匹配','已推送'].includes(orderStatus(o))&&canSeeLead(LBY[o.leadId])).map(o=>({o,L:LBY[o.leadId],d:dist(LBY[o.leadId],t),subj:t.subjects.includes(o.subject)||(o.subject==='全科辅导'&&t.levels.includes('小学')),lvl:t.levels.includes(o.level)}))
+    .filter(x=>x.d<=5).sort((a,b)=>(b.subj+b.lvl)-(a.subj+a.lvl)||a.d-b.d);
+  const td=deals.filter(d=>d.teacherId===t.id);const td30=td.filter(d=>T-dn(d.date)<=30);
+  const own=me().role==='老板'||t.by===me().id||me().role==='城市主管';
+  const pts=near.map(n=>({x:n.L.x,y:n.L.y,color:'var(--warn)',act:'order',id:n.o.id,label:n.o.grade+n.o.subject}));
+  return `<button class="link" data-act="back">← 返回</button>
+  <div class="ph"><div><div class="eyebrow">${t.city} · ${h(t.district)} · ${md(t.entered)} 录入 · 录入人 ${SBY[t.by].name}</div><h1>${h(t.name)} ${chip(t.status,t.status==='可接单'?'green':'')}</h1></div></div>
+  <div class="grid2"><div class="stack">
+    <section class="card"><h2>老师资料</h2><dl class="kv"><dt>手机</dt><dd>${own?mask(t.phone):'仅录入人和主管可见'}</dd><dt>类型</dt><dd>${t.hasType?h(t.type):'<span class="rdue bad">未填写</span>'}</dd><dt>学历</dt><dd>${h(t.edu)}</dd>
+      <dt>科目</dt><dd>${t.subjects.join('、')}</dd><dt>学段</dt><dd>${t.levels.join('、')}</dd><dt>地址</dt><dd>${t.hasAddress?h(t.address):'<span class="rdue bad">只有城市，缺详细地址</span>'}</dd>
+      <dt>成交</dt><dd>累计 ${td.length} 单，近 30 天 ${td30.length} 单</dd></dl></section>
+    <section class="card"><div class="cardhead"><h2>资料完整度</h2><span class="muted">${c}/5 项</span></div>
+      <div class="prog"><i style="width:${c/5*100}%"></i></div>
+      <ul class="cl">${cp.map(x=>`<li><span class="${x[1]?'ok-i':'no-i'}">${x[1]?'✓':'✗'}</span>${x[0]}</li>`).join('')}</ul></section>
+  </div><div class="stack">
+    <section class="card"><div class="cardhead"><h2>附近订单</h2><span class="muted">5 公里内待匹配 ${near.length} 单</span></div>
+      ${near.length?`<div>${near.slice(0,8).map(n=>{const pushed=n.o.pushes.some(p=>p.teacherId===t.id);return `<div class="row" data-act="order" data-id="${n.o.id}"><div class="rmain"><div class="rtitle"><button class="link" data-act="order" data-id="${n.o.id}">${h(n.o.grade)} ${h(n.o.subject)}</button>${chip(orderStatus(n.o),'orange')}</div>
+      <div class="rsub">${h(n.L.district)} · ${h(n.o.schedule)} · ${n.o.price} 元/时</div><div class="chips">${n.subj?chip('科目匹配','blue'):chip('科目不符')}${n.lvl?chip('学段匹配','blue'):''}</div></div>
+      <div class="rdue">${n.d.toFixed(1)} km</div><div class="ract">${pushed?chip('已推送','violet'):`<button class="btn sm primary" data-act="push" data-o="${n.o.id}" data-t="${t.id}">推送给 TA</button>`}</div></div>`}).join('')}</div>`:empty('5 公里内暂时没有待匹配的订单')}
+      ${miniMap(t,pts,5)}
+      <div class="legend"><span><i class="sw" style="background:var(--fg)"></i> 老师位置</span><span><i class="sw" style="background:var(--warn)"></i> 待匹配订单</span></div></section>
+  </div></div>`;
+}
+
+/* ================= 地图 ================= */
+function pageMap(){
+  const cities=scopeCities();if(!cities.includes(S.mapCity))S.mapCity=cities[0];
+  const c=S.mapCity;const ly=S.layers;
+  const P=leads.filter(l=>l.city===c&&canSeeLead(l));
+  const openP=ly.p?P.filter(l=>OPEN.includes(l.status)):[];
+  const dealP=ly.d?P.filter(l=>l.status==='已成交'):[];
+  const Ts=ly.t?teachers.filter(t=>t.city===c):[];
+  const Os=ly.o?orders.filter(o=>o.city===c&&['待匹配','已推送'].includes(orderStatus(o))&&canSeeLead(LBY[o.leadId])):[];
+  let sel=null;
+  if(S.mapSel){const [ty,id]=S.mapSel;sel=ty==='p'?LBY[id]:ty==='t'?TBY[id]:ty==='o'?LBY[OBY[id].leadId]:null;if(sel&&sel.city!==c)sel=null}
+  let panel='<p class="hint">点地图上的点查看详情，并统计 3 公里内的老师和订单。</p>';
+  if(sel){
+    const [ty,id]=S.mapSel;
+    const nT=teachers.filter(t=>t.city===c&&dist(t,sel)<=3);const nO=orders.filter(o=>o.city===c&&['待匹配','已推送'].includes(orderStatus(o))&&dist(LBY[o.leadId],sel)<=3);const nP=P.filter(l=>OPEN.includes(l.status)&&dist(l,sel)<=3);
+    const title=ty==='t'?TBY[id].name+' 老师':ty==='o'?'订单 · '+OBY[id].grade+OBY[id].subject:sel.parent;
+    const act=ty==='t'?'teacher':ty==='o'?'order':'cust';
+    panel=`<h3>${h(title)}</h3><p class="hint">${h(sel.district)}${ty==='p'?' · '+sel.status:ty==='t'?' · '+TBY[id].subjects.join('/')+' · '+TBY[id].status:''}</p>
+    <div class="kpis"><div class="kpi"><span class="l">3 km 内老师</span><span class="v">${nT.length}</span></div><div class="kpi"><span class="l">3 km 内待匹配订单</span><span class="v">${nO.length}</span></div><div class="kpi"><span class="l">3 km 内跟进中家长</span><span class="v">${nP.length}</span></div></div>
+    <div class="btns"><button class="btn primary" data-act="${act}" data-id="${id}">打开详情</button></div>`;
+  }
+  const dot=(x,y,col,ty,id,label,shape)=>shape==='sq'?`<rect class="dot" data-act="mapsel" data-ty="${ty}" data-id="${id}" x="${x+.05}" y="${y-.42}" width=".34" height=".34" style="fill:${col};stroke:var(--surface);stroke-width:.05"><title>${h(label)}</title></rect>`
+    :`<circle class="dot" data-act="mapsel" data-ty="${ty}" data-id="${id}" cx="${x}" cy="${y}" r=".19" style="fill:${col};stroke:var(--surface);stroke-width:.05"><title>${h(label)}</title></circle>`;
+  return `<div class="ph"><div><div class="eyebrow">家长、老师、订单在同一张图上</div><h1>地图</h1></div>
+    <div class="fld"><label for="mapCity">城市</label><select id="mapCity" data-bind="mapCity">${cities.map(x=>`<option ${x===c?'selected':''}>${x}</option>`).join('')}</select></div></div>
+  <div class="card"><div class="legend">
+    <label><input type="checkbox" data-layer="p" ${ly.p?'checked':''}><i class="sw" style="background:var(--accent)"></i>跟进中家长 ${P.filter(l=>OPEN.includes(l.status)).length}</label>
+    <label><input type="checkbox" data-layer="d" ${ly.d?'checked':''}><i class="sw" style="background:var(--violet)"></i>已成交家长</label>
+    <label><input type="checkbox" data-layer="t" ${ly.t?'checked':''}><i class="sw" style="background:var(--good)"></i>老师 ${teachers.filter(t=>t.city===c).length}</label>
+    <label><input type="checkbox" data-layer="o" ${ly.o?'checked':''}><i class="sw" style="background:var(--warn);border-radius:2px"></i>待匹配订单</label></div>
+  <div class="grid2"><div class="mapbox"><svg viewBox="0 0 20 14" role="img" aria-label="${c} 分布图">
+    <rect x="0" y="0" width="20" height="14" style="fill:var(--surface-2)"></rect>
+    <path d="M0,7.6 C3.5,6.2 6.5,9.2 10,7.9 S15.5,5.4 20,6.7" style="fill:none;stroke:var(--accent-soft);stroke-width:.55"></path>
+    ${DISTRICTS[c].map(d=>`<text x="${d[1]}" y="${d[2]-.9}" text-anchor="middle" style="fill:var(--muted);font-size:.5px;font-weight:700">${d[0]}</text>`).join('')}
+    ${sel?`<circle cx="${sel.x}" cy="${sel.y}" r="3" style="fill:var(--accent-soft);fill-opacity:.55;stroke:var(--accent);stroke-width:.05;stroke-dasharray:.18 .14"></circle>`:''}
+    ${dealP.map(l=>dot(l.x,l.y,'var(--violet)','p',l.id,l.parent+' · 已成交')).join('')}
+    ${openP.map(l=>dot(l.x,l.y,'var(--accent)','p',l.id,l.parent+' · '+l.status)).join('')}
+    ${Ts.map(t=>dot(t.x,t.y,'var(--good)','t',t.id,t.name+' 老师')).join('')}
+    ${Os.map(o=>{const L=LBY[o.leadId];return dot(L.x,L.y,'var(--warn)','o',o.id,'订单 '+o.grade+o.subject,'sq')}).join('')}
+    ${sel?`<circle cx="${sel.x}" cy="${sel.y}" r=".3" style="fill:none;stroke:var(--fg);stroke-width:.08"></circle>`:''}
+  </svg></div><div class="stack">${panel}</div></div></div>`;
+}
+
+/* ================= 数据分析 ================= */
+function ctx(){
+  const cities=S.city==='全部'?scopeCities():[S.city];
+  return {cities,m:S.m,ok:x=>cities.includes(x.city)&&(!S.person||x.owner===S.person)};
+}
+function stats(c,f,m){
+  f=f||(()=>true);m=m||c.m;
+  const L=leads.filter(l=>c.ok(l)&&l.date.startsWith(m)&&f(l));
+  const D=deals.filter(d=>c.ok(d)&&d.date.startsWith(m)&&f(d));
+  const RF=deals.filter(d=>c.ok(d)&&d.refund&&d.refund.date.startsWith(m)&&f(d));
+  const rev=sum(D,d=>d.fee),ra=sum(RF,d=>d.refund.amount);
+  const cost=S.person?null:sum(costs.filter(x=>x.month===m&&c.cities.includes(x.city)&&f(x)),x=>x.amount);
+  return {leads:L.length,inv:L.filter(l=>l.channel==='库存客户').length,deals:D.length,rev,rc:RF.length,ra,net:rev-ra,cost};
+}
+const roi=s=>s.cost?s.net/s.cost:null;
+const roiTxt=v=>v==null?'—':v.toFixed(2);
+function filterBar(){
+  const sc=scopeCities();const owners=ownersIn(S.city==='全部'?sc:[S.city]);
+  return `<div class="filters">
+    <div class="fld"><label for="fm">月份</label><select id="fm" data-bind="m">${MONTHS.map(m=>`<option value="${m}" ${S.m===m?'selected':''}>${MLABEL[m]}</option>`).join('')}</select></div>
+    <div class="fld"><label for="fc">城市</label><select id="fc" data-bind="city"><option value="全部">${me().role==='城市主管'?'我的辖区':'全部城市'}</option>${sc.map(c=>`<option ${S.city===c?'selected':''}>${c}</option>`).join('')}</select></div>
+    <div class="fld"><label for="fp">人员</label><select id="fp" data-bind="person"><option value="">全部人员</option>${owners.map(s=>`<option value="${s.id}" ${S.person===s.id?'selected':''}>${s.name}（${s.role}）</option>`).join('')}</select></div>
+  </div>`;
+}
+const TABS=[['overview','经营总览'],['channel','渠道与获客'],['conv','转化'],['refund','退费'],['supply','老师供给'],['staff','员工']];
+function pageAnalytics(){
+  const u=me();
+  const body={overview:tabOverview,channel:tabChannel,conv:tabConv,refund:tabRefund,supply:tabSupply,staff:tabStaff}[S.tab]();
+  return `<div class="ph"><div><div class="eyebrow">${u.role==='城市主管'?'只显示你的辖区：'+u.cities.join('、'):'全公司'} · 同一个指标全系统只有一种算法</div><h1>数据分析</h1></div>${filterBar()}</div>
+  <div class="tabs" role="tablist">${TABS.map(t=>`<button class="tab" role="tab" aria-selected="${S.tab===t[0]}" data-act="tab" data-id="${t[0]}">${t[1]}</button>`).join('')}</div>
+  ${body}`;
+}
+function kpi(l,v,s,cls){return `<div class="kpi ${cls||''}"><span class="l">${l}</span><span class="v ${cls==='bad'?'bad':''}">${v}</span>${s?`<span class="s">${s}</span>`:''}</div>`}
+function groupRows(c,keys,keyOf){return keys.map(k=>({k,...stats(c,x=>keyOf(x)===k)}))}
+function statTable(rows,first,showCost){
+  const tot=rows.reduce((a,r)=>{for(const k of ['leads','deals','rev','rc','ra','net'])a[k]+=r[k];a.cost=(a.cost||0)+(r.cost||0);return a},{leads:0,deals:0,rev:0,rc:0,ra:0,net:0,cost:0});
+  const cc=showCost&&!S.person;
+  return `<div class="tw"><table class="t"><thead><tr><th>${first}</th><th class="n">新线索</th><th class="n">成交</th><th class="n">营收</th><th class="n">退费笔数</th><th class="n">退费额</th><th class="n">净营收</th><th class="n">退单率</th>${cc?'<th class="n">投入</th><th class="n">每单成本</th><th class="n">投产比</th>':''}</tr></thead><tbody>
+  ${rows.sort((a,b)=>b.net-a.net).map(r=>{const rr=r.deals?r.rc/r.deals:0;const v=roi(r);return `<tr><td>${h(r.k)}</td><td class="n">${num(r.leads)}</td><td class="n">${num(r.deals)}</td><td class="n">${num(r.rev)}</td><td class="n">${r.rc}</td><td class="n">${num(r.ra)}</td><td class="n"><b>${num(r.net)}</b></td><td class="n ${rr>.4?'rdue bad':''}">${pct(r.rc,r.deals)}</td>${cc?`<td class="n">${r.cost?num(r.cost):'—'}</td><td class="n">${r.cost&&r.deals?num(r.cost/r.deals):'—'}</td><td class="n ${v!=null&&v<1?'rdue bad':''}">${roiTxt(v)}</td>`:''}</tr>`}).join('')}
+  <tr class="total"><td>合计</td><td class="n">${num(tot.leads)}</td><td class="n">${num(tot.deals)}</td><td class="n">${num(tot.rev)}</td><td class="n">${tot.rc}</td><td class="n">${num(tot.ra)}</td><td class="n">${num(tot.net)}</td><td class="n">${pct(tot.rc,tot.deals)}</td>${cc?`<td class="n">${num(tot.cost)}</td><td class="n">${tot.deals?num(tot.cost/tot.deals):'—'}</td><td class="n">${tot.cost?(tot.net/tot.cost).toFixed(2):'—'}</td>`:''}</tr></tbody></table></div>`;
+}
+function attention(c){
+  const items=[];const all=stats(c);const avg=all.deals?all.rc/all.deals:0;
+  for(const city of c.cities){const s=stats(c,x=>x.city===city);if(s.deals>=8&&s.rc/s.deals>avg+.1)items.push({bad:1,t:`${city}退单率 ${pct(s.rc,s.deals)}，比平均高 ${((s.rc/s.deals-avg)*100).toFixed(0)} 个点`,go:'refund',g:'去看退费'})}
+  if(!S.person)for(const city of c.cities)for(const ch of PAID){const s=stats(c,x=>x.city===city&&x.channel===ch);if(s.cost>=300&&s.net<s.cost)items.push({bad:1,t:`${city}${ch}投入 ${yuan(s.cost)}，净营收只有 ${yuan(s.net)}`,go:'channel',g:'去看渠道'})}
+  for(const u of ownersIn(c.cities)){if(S.person&&u.id!==S.person)continue;const n=leads.filter(l=>l.owner===u.id&&l.nextDue&&l.nextDue<TODAY&&OPEN.includes(l.status)).length;if(n>=3)items.push({t:`${u.name}有 ${n} 位客户跟进已超期`,go:'staff',g:'去看员工'})}
+  const wait=orders.filter(o=>c.cities.includes(o.city)&&orderStatus(o)==='待匹配'&&T-dn(o.created)>=3).length;
+  if(wait)items.push({t:`${wait} 个订单超过 3 天还没推送老师`,go:'supply',g:'去看老师供给'});
+  return items;
+}
+function tabOverview(){
+  const c=ctx();const s=stats(c);const v=roi(s);
+  const months=MONTHS.map(m=>({m,net:stats(c,null,m).net}));const mx=Math.max(...months.map(x=>x.net),1);
+  const at=attention(c);
+  return `<div class="kpis">${kpi('营收（信息费）',yuan(s.rev),'按成交日计入')}${kpi('退费金额',yuan(s.ra),'按退费发生日计入','bad')}${kpi('净营收',yuan(s.net),'营收 − 退费','dark')}${S.person?'':kpi('流量投入',yuan(s.cost),'投产比 '+roiTxt(v))}</div>
+  <div class="kpis">${kpi('新线索',num(s.leads),'其中库存激活 '+s.inv)}${kpi('成交',num(s.deals)+' 笔')}${kpi('退费',s.rc+' 笔')}${kpi('期间退单率',pct(s.rc,s.deals),'当月退费笔数 ÷ 当月成交笔数',s.deals&&s.rc/s.deals>.35?'bad':'')}</div>
+  <div class="grid2"><section class="card"><div class="cardhead"><h2>每月净营收</h2><span class="muted">${S.city==='全部'?'':S.city}${S.person?' · '+SBY[S.person].name:''}</span></div>
+    <div class="vbars">${months.map(x=>`<div class="vb"><span>${num(x.net)}</span><div class="c ${x.m==='2026-10'?'part':''}" style="height:${Math.max(2,x.net/mx*82)}%"></div></div>`).join('')}</div>
+    <div class="vlabels">${months.map(x=>`<div>${MLABEL[x.m]}</div>`).join('')}</div></section>
+  <section class="card"><h2>需要关注 <span class="muted">系统自动找出</span></h2>
+    ${at.length?`<div class="attn">${at.slice(0,6).map(a=>`<button class="${a.bad?'bad':''}" data-act="tab" data-id="${a.go}"><span>${h(a.t)}</span><span class="go">${a.g} →</span></button>`).join('')}</div>`:empty('本月没有明显异常')}</section></div>
+  <section class="card"><div class="cardhead"><h2>城市对比</h2><span class="muted">按净营收排序</span></div>${statTable(groupRows(c,c.cities,x=>x.city),'城市',true)}</section>`;
+}
+function tabChannel(){
+  const c=ctx();const byCh=S.chView==='channel';
+  const rows=byCh?groupRows(c,CHANNELS,x=>x.channel):groupRows(c,c.cities,x=>x.city);
+  const mat=PAID.map(ch=>({ch,cells:c.cities.map(city=>{const s=stats(c,x=>x.city===city&&x.channel===ch);return {s,v:roi(s)}})}));
+  return `<section class="card"><div class="cardhead"><h2>成交与投产分析</h2>
+    <div class="seg"><button data-act="chview" data-id="channel" aria-pressed="${byCh}">按渠道</button><button data-act="chview" data-id="city" aria-pressed="${!byCh}">按城市</button></div></div>
+    ${statTable(rows,byCh?'渠道':'城市',true)}
+    <p class="hint">投产比 = 净营收 ÷ 投入。投入来自流量运营的日报。转介绍、库存客户没有投入，显示"—"。</p></section>
+  ${S.person?'':`<section class="card"><div class="cardhead"><h2>渠道 × 城市 投产比</h2><span class="muted">哪个城市的哪个渠道值得加钱、哪个该停</span></div>
+    <div class="tw"><table class="t"><thead><tr><th>渠道</th>${c.cities.map(x=>`<th class="n">${x}</th>`).join('')}</tr></thead><tbody>
+    ${mat.map(r=>`<tr><td>${r.ch}</td>${r.cells.map(x=>`<td class="n ${x.v==null?'':x.v<1?'cell-bad':x.v>=5?'cell-best':x.v>=2?'cell-good':''}" title="投入 ${num(x.s.cost)} · 净营收 ${num(x.s.net)}">${roiTxt(x.v)}</td>`).join('')}</tr>`).join('')}
+    </tbody></table></div><p class="hint">红色 = 投入大于净营收；蓝色越深 = 投产越高。鼠标停在格子上看投入和净营收。</p></section>`}`;
+}
+function tabConv(){
+  const c=ctx();
+  const L=leads.filter(l=>c.ok(l)&&l.date.startsWith(c.m));
+  const f=(arr)=>({n:arr.length,c1:arr.filter(l=>l.reached>=1).length,c2:arr.filter(l=>l.reached>=2).length,c3:arr.filter(l=>l.reached>=3).length,d:arr.filter(l=>l.dealIds.length).length,
+    days:(()=>{const x=arr.filter(l=>l.dealIds.length).map(l=>dn(DBY[l.dealIds[0]].date)-dn(l.date));return x.length?(sum(x,v=>v)/x.length).toFixed(1):'—'})()});
+  const all=f(L);const steps=[['新线索',all.n],['已联系',all.c1],['已加微信',all.c2],['已报价',all.c3],['成交',all.d]];
+  return `<p class="note">转化按"进线批次"统计：${MLABEL[c.m]}进来的客户，到今天为止走到了哪一步。这和"经营总览"按当月发生统计的成交数不是同一个口径，页面上分开显示。</p>
+  <div class="grid2"><section class="card"><h2>转化漏斗</h2><div class="bars">${steps.map(s=>`<div class="bar"><span>${s[0]}</span><div class="tr"><div class="fi" style="width:${all.n?s[1]/all.n*100:0}%"></div></div><span class="vv">${num(s[1])} · ${pct(s[1],all.n)}</span></div>`).join('')}</div>
+    <p class="hint">平均成交周期：${all.days} 天（进线到成交）</p></section>
+  <section class="card"><h2>各渠道转化</h2><div class="tw"><table class="t"><thead><tr><th>渠道</th><th class="n">进线</th><th class="n">联系率</th><th class="n">加微信率</th><th class="n">报价率</th><th class="n">成交率</th><th class="n">成交周期</th></tr></thead><tbody>
+    ${CHANNELS.map(ch=>{const x=f(L.filter(l=>l.channel===ch));return `<tr><td>${ch}</td><td class="n">${x.n}</td><td class="n">${pct(x.c1,x.n)}</td><td class="n">${pct(x.c2,x.n)}</td><td class="n">${pct(x.c3,x.n)}</td><td class="n"><b>${pct(x.d,x.n)}</b></td><td class="n">${x.days} 天</td></tr>`}).join('')}
+  </tbody></table></div></section></div>`;
+}
+function tabRefund(){
+  const c=ctx();const s=stats(c);
+  const RF=deals.filter(d=>c.ok(d)&&d.refund&&d.refund.date.startsWith(c.m));
+  const D=deals.filter(d=>c.ok(d)&&d.date.startsWith(c.m));const fin=D.filter(d=>d.refund).length;
+  const rs=Object.keys(REASONS).map(r=>({r,n:RF.filter(d=>d.refund.reason===r).length})).sort((a,b)=>b.n-a.n);const mx=Math.max(1,...rs.map(x=>x.n));
+  const owners=ownersIn(c.cities).filter(u=>!S.person||u.id===S.person);
+  return `<div class="kpis">${kpi('退费笔数',s.rc)}${kpi('退费金额',yuan(s.ra),'','bad')}${kpi('期间退单率',pct(s.rc,s.deals),'当月退费 ÷ 当月成交')}${kpi('本月成交的最终退费率',pct(fin,D.length),'本月成交的单，到今天退了多少')}</div>
+  <div class="grid2"><section class="card"><h2>退费原因</h2><div class="bars">${rs.map(x=>`<div class="bar"><span>${x.r}</span><div class="tr"><div class="fi r" style="width:${x.n/mx*100}%"></div></div><span class="vv">${x.n} 笔</span></div>`).join('')}</div></section>
+  <section class="card"><h2>按负责人</h2><div class="tw"><table class="t"><thead><tr><th>负责人</th><th class="n">成交</th><th class="n">退费</th><th class="n">退单率</th><th class="n">退费额</th></tr></thead><tbody>
+    ${owners.map(u=>{const x=stats({...c,ok:o=>c.cities.includes(o.city)&&o.owner===u.id});return `<tr><td>${u.name}</td><td class="n">${x.deals}</td><td class="n">${x.rc}</td><td class="n ${x.deals&&x.rc/x.deals>.4?'rdue bad':''}">${pct(x.rc,x.deals)}</td><td class="n">${num(x.ra)}</td></tr>`}).join('')}
+  </tbody></table></div></section></div>
+  <section class="card"><h2>按城市</h2>${statTable(groupRows(c,c.cities,x=>x.city),'城市',false)}</section>`;
+}
+function tabSupply(){
+  const c=ctx();
+  const openO=orders.filter(o=>c.cities.includes(o.city)&&['待匹配','已推送'].includes(orderStatus(o)));
+  const P=orders.filter(o=>c.cities.includes(o.city)).flatMap(o=>o.pushes);
+  const rank={已推送:0,已拒绝:0,有意向:1,已约试课:2,试课失败:2,试课成功:3};
+  return `<div class="kpis">${kpi('推送次数',P.length)}${kpi('有意向',P.filter(p=>rank[p.status]>=1).length,pct(P.filter(p=>rank[p.status]>=1).length,P.length))}${kpi('约到试课',P.filter(p=>rank[p.status]>=2).length)}${kpi('试课成功率',pct(P.filter(p=>p.status==='试课成功').length,P.filter(p=>rank[p.status]>=2&&p.status!=='已约试课').length),'试课成功 ÷ 已出结果的试课')}</div>
+  <section class="card"><h2>各城市供需</h2><div class="tw"><table class="t"><thead><tr><th>城市</th><th class="n">老师</th><th class="n">可接单</th><th class="n">资料完整</th><th class="n">待匹配订单</th><th class="n">每单可选老师</th><th class="n">近 30 天接单老师</th></tr></thead><tbody>
+  ${c.cities.map(city=>{const ts=teachers.filter(t=>t.city===city);const fr=ts.filter(t=>t.status==='可接单');const oo=openO.filter(o=>o.city===city);const act=new Set(deals.filter(d=>d.city===city&&T-dn(d.date)<=30).map(d=>d.teacherId));
+    return `<tr><td>${city}</td><td class="n">${ts.length}</td><td class="n">${fr.length}</td><td class="n">${ts.filter(t=>completeness(t).every(x=>x[1])).length}</td><td class="n">${oo.length}</td><td class="n ${oo.length&&fr.length/oo.length<2?'rdue bad':''}">${oo.length?(fr.length/oo.length).toFixed(1):'—'}</td><td class="n">${act.size}</td></tr>`}).join('')}
+  </tbody></table></div></section>
+  <section class="card"><h2>科目供需</h2><div class="tw"><table class="t"><thead><tr><th>科目</th><th class="n">可接单老师</th><th class="n">待匹配订单</th><th>判断</th></tr></thead><tbody>
+  ${SUBJ.slice(0,5).map(sj=>{const tn=teachers.filter(t=>c.cities.includes(t.city)&&t.status==='可接单'&&t.subjects.includes(sj)).length;const on=openO.filter(o=>o.subject===sj).length;
+    return `<tr><td>${sj}</td><td class="n">${tn}</td><td class="n">${on}</td><td>${on&&tn<on*2?chip('老师偏少，需要招聘','red'):chip('够用','green')}</td></tr>`}).join('')}
+  </tbody></table></div></section>`;
+}
+function staffRows(c,list){
+  return list.map(u=>{
+    const mine=leads.filter(l=>l.owner===u.id&&c.cities.includes(l.city));
+    const fl=mine.flatMap(l=>l.followups.filter(f=>f.by===u.id&&f.date.startsWith(c.m)&&STAGES.includes(f.status)));
+    const x=stats({...c,ok:o=>c.cities.includes(o.city)&&o.owner===u.id});
+    const over=mine.filter(l=>l.nextDue&&l.nextDue<TODAY&&OPEN.includes(l.status)).length;
+    const t=tasks(u.id);
+    return {u,newL:x.leads,fl:fl.length,deals:x.deals,rc:x.rc,net:x.net,over,visit:t.visits.length};
+  });
+}
+function staffTable(c,list,click){
+  const rows=staffRows(c,list);
+  return `<div class="tw"><table class="t"><thead><tr><th>姓名</th><th>岗位</th><th class="n">新线索</th><th class="n">跟进次数</th><th class="n">成交</th><th class="n">退费</th><th class="n">净营收</th><th class="n">当前超期</th><th class="n">待回访</th></tr></thead><tbody>
+  ${rows.map(r=>`<tr class="${click?'click':''}" ${click?`data-act="staffsel" data-id="${r.u.id}"`:''}><td>${click?`<button class="link" data-act="staffsel" data-id="${r.u.id}">${r.u.name}</button>`:r.u.name}</td><td>${r.u.role}</td><td class="n">${r.newL}</td><td class="n">${r.fl}</td><td class="n">${r.deals}</td><td class="n">${r.rc}</td><td class="n"><b>${num(r.net)}</b></td><td class="n ${r.over?'rdue bad':''}">${r.over}</td><td class="n">${r.visit}</td></tr>`).join('')}
+  </tbody></table></div>`;
+}
+function tabStaff(){
+  const c=ctx();const list=ownersIn(c.cities).filter(u=>!S.person||u.id===S.person);
+  return `<section class="card"><div class="cardhead"><h2>员工 · ${MLABEL[c.m]}</h2><span class="muted">全部由系统记录自动生成，不需要填日报</span></div>${staffTable(c,list,true)}</section>${S.staffSel?dailyCard(S.staffSel,c.cities):''}`;
+}
+function dailyCard(uid,cities){
+  const u=SBY[uid];if(!u)return '';
+  const days=[];for(let i=13;i>=0;i--)days.push(addD(TODAY,-i));
+  const mine=leads.filter(l=>l.owner===uid&&cities.includes(l.city));
+  const rows=days.map(d=>{const fl=mine.reduce((s,l)=>s+l.followups.filter(f=>f.by===uid&&f.date===d&&STAGES.includes(f.status)).length,0);
+    const D=deals.filter(x=>x.owner===uid&&x.date===d);const RF=deals.filter(x=>x.owner===uid&&x.refund&&x.refund.date===d);
+    return {d,nl:mine.filter(l=>l.date===d).length,fl,dc:D.length,rc:RF.length,net:sum(D,x=>x.fee)-sum(RF,x=>x.refund.amount)}});
+  return `<section class="card"><div class="cardhead"><h2>${u.name} · 最近 14 天每日工作</h2><button class="btn sm" data-act="staffsel" data-id="">收起</button></div>
+  <div class="tw"><table class="t"><thead><tr><th>日期</th><th class="n">新线索</th><th class="n">跟进</th><th class="n">成交</th><th class="n">退费</th><th class="n">净营收</th></tr></thead><tbody>
+  ${rows.slice().reverse().map(r=>`<tr><td>${md(r.d)} ${wk(r.d)}</td><td class="n">${r.nl}</td><td class="n">${r.fl}</td><td class="n">${r.dc}</td><td class="n">${r.rc}</td><td class="n">${num(r.net)}</td></tr>`).join('')}
+  </tbody></table></div><p class="hint">这张表替代原来的员工日报：每天做了什么，系统已经记下了。</p></section>`;
+}
+function pageStaffData(){
+  const c={cities:CITIES,m:S.m,ok:x=>true};
+  const list=STAFF.filter(s=>s.role==='客服'||s.role==='城市主管');
+  return `<div class="ph"><div><div class="eyebrow">所有数字来自系统记录，员工不需要再填日报</div><h1>员工数据</h1></div>
+    <div class="fld"><label for="fm2">月份</label><select id="fm2" data-bind="m">${MONTHS.map(m=>`<option value="${m}" ${S.m===m?'selected':''}>${MLABEL[m]}</option>`).join('')}</select></div></div>
+  <section class="card"><div class="cardhead"><h2>客服与主管 · ${MLABEL[S.m]}</h2><span class="muted">点名字看每天的明细</span></div>${staffTable(c,list,true)}</section>
+  ${S.staffSel?dailyCard(S.staffSel,CITIES):''}
+  <section class="card"><h2>流量运营 · ${MLABEL[S.m]}</h2><div class="tw"><table class="t"><thead><tr><th>姓名</th><th class="n">日报填报的投入</th></tr></thead><tbody>
+  ${STAFF.filter(s=>s.role==='流量运营').map(s=>`<tr><td>${s.name}</td><td class="n">${yuan(sum(costs.filter(x=>x.by===s.id&&x.month===S.m),x=>x.amount))}</td></tr>`).join('')}</tbody></table></div>
+  <p class="hint">流量运营保留日报，用来填写各渠道的投入。</p></section>`;
+}
+function pageTeam(){
+  const u=me();const c={cities:u.cities,m:S.m,ok:x=>u.cities.includes(x.city)};
+  return `<div class="ph"><div><div class="eyebrow">辖区：${u.cities.join('、')}</div><h1>团队数据</h1></div>
+    <div class="fld"><label for="fm3">月份</label><select id="fm3" data-bind="m">${MONTHS.map(m=>`<option value="${m}" ${S.m===m?'selected':''}>${MLABEL[m]}</option>`).join('')}</select></div></div>
+  <section class="card"><div class="cardhead"><h2>${MLABEL[S.m]}</h2><span class="muted">点名字看每天的明细</span></div>${staffTable(c,ownersIn(u.cities),true)}</section>
+  ${S.staffSel?dailyCard(S.staffSel,u.cities):''}`;
+}
+function pageMine(){
+  const u=me();const c={cities:u.cities,m:S.m,ok:x=>x.owner===u.id&&u.cities.includes(x.city)};const s=stats(c);
+  const mine=leads.filter(l=>l.owner===u.id);
+  const dist0=['新线索','已联系','已加微信','已报价','已成交','已退费','流失'].map(st=>[st,mine.filter(l=>l.status===st).length]);
+  const r=staffRows(c,[u])[0];
+  return `<div class="ph"><div><div class="eyebrow">${u.name} · ${u.cities.join('、')}</div><h1>我的数据</h1></div>
+    <div class="fld"><label for="fm4">月份</label><select id="fm4" data-bind="m">${MONTHS.map(m=>`<option value="${m}" ${S.m===m?'selected':''}>${MLABEL[m]}</option>`).join('')}</select></div></div>
+  <div class="kpis">${kpi('新线索',s.leads)}${kpi('跟进次数',r.fl)}${kpi('成交',s.deals+' 笔')}${kpi('退费',s.rc+' 笔',pct(s.rc,s.deals))}${kpi('净营收',yuan(s.net),'','dark')}</div>
+  <section class="card"><h2>我的客户现状</h2><div class="chips">${dist0.map(x=>chip(x[0]+' '+x[1],STATUS_CLS[x[0]])).join('')}</div></section>
+  ${dailyCard(u.id,u.cities)}`;
+}
+function pageAccounts(){
+  return `<div class="ph"><div><div class="eyebrow">停用后立即无法登录</div><h1>账号管理</h1></div></div>
+  <section class="card"><div class="tw"><table class="t"><thead><tr><th>姓名</th><th>岗位</th><th>负责城市</th><th>状态</th><th></th></tr></thead><tbody>
+  ${STAFF.filter(s=>s.role!=='老板').map(s=>`<tr><td>${s.name}</td><td>${s.role}</td><td>${s.cities?s.cities.join('、'):'—'}</td><td>${s.active?chip('在职','green'):chip('已停用','red')}</td><td><button class="btn sm ${s.active?'danger':''}" data-act="acct" data-id="${s.id}">${s.active?'停用':'启用'}</button></td></tr>`).join('')}
+  </tbody></table></div><p class="hint">员工离职时：先停用账号，再把客户整批交接给其他人。交接后客户的来源渠道和历史业绩归属不变。</p></section>`;
+}
+
+/* ================= 弹窗 ================= */
+let modalSubmit=null,modalLive=null;
+function openModal(html,onSubmit,onLive){
+  const m=document.getElementById('modal');
+  m.innerHTML=`<div class="dlg" role="dialog" aria-modal="true">${html}</div>`;m.hidden=false;
+  modalSubmit=onSubmit;modalLive=onLive||null;
+  const f=m.querySelector('input,select,textarea');if(f)f.focus();
+  if(modalLive)modalLive(m.querySelector('form'));
+}
+function closeModal(){const m=document.getElementById('modal');m.hidden=true;m.innerHTML='';modalSubmit=null;modalLive=null}
+function toast(t){const el=document.getElementById('toast');el.textContent=t;el.hidden=false;clearTimeout(toast.tm);toast.tm=setTimeout(()=>{el.hidden=true},3200)}
+const fv=(f,n)=>{const e=f.elements[n];return e?String(e.value).trim():''};
+function setErr(f,t){const e=f.querySelector('.err');e.textContent=t||'';e.hidden=!t}
+const foot=(ok)=>`<p class="err" hidden></p><div class="foot"><button type="button" class="btn" data-act="close">取消</button><button type="submit" class="btn primary">${ok}</button></div>`;
+
+function mFollow(id){
+  const L=LBY[id];const dealt=!OPEN.includes(L.status);
+  const opts=dealt?['备注']:['已联系','已加微信','已报价','流失'];
+  const def=dealt?'备注':(STAGES.includes(L.status)?L.status:'已联系');
+  openModal(`<form class="form"><h2>记跟进 · ${h(L.parent)}</h2>
+    <div class="fld"><label for="f-st">跟进结果</label><select id="f-st" name="status">${opts.map(o=>`<option ${o===def?'selected':''}>${o}</option>`).join('')}</select></div>
+    <div class="fld"><label for="f-tx">跟进内容</label><textarea id="f-tx" name="text" placeholder="例如：家长希望周末上课，已发两位老师资料"></textarea></div>
+    <p class="hint ok" id="f-next"></p>${foot('保存跟进')}</form>`,
+  f=>{
+    const st=fv(f,'status'),tx=fv(f,'text');
+    if(!tx)return setErr(f,'请写一句跟进内容，方便下次接着聊。');
+    if(st==='备注'){L.followups.push({date:TODAY,status:'备注',by:me().id,text:tx});closeModal();toast('已保存备注');return render()}
+    const info=nextDueInfo(L,st,TODAY);
+    L.followups.push({date:TODAY,status:st,by:me().id,text:tx});
+    L.status=st;L.lastFollow=TODAY;
+    if(STAGES.includes(st))L.reached=Math.max(L.reached,STAGES.indexOf(st)+1);
+    L.nextDue=info?info.date:null;
+    closeModal();toast(info?`已记录，下次跟进：${md(info.date)}（${info.n} 天后）`:'已记录，客户标记为流失，停止跟进');render();
+  },
+  f=>{const st=fv(f,'status');const el=f.querySelector('#f-next');
+    if(st==='备注'){el.textContent='已成交或已退费的客户，只记备注，不再排跟进。';return}
+    if(st==='流失'){el.textContent='标记流失后停止自动跟进。';return}
+    const info=nextDueInfo(L,st,TODAY);el.textContent=`保存后，下次跟进自动排在 ${md(info.date)}（"${st}"第 ${info.k} 次跟进，间隔 ${info.n} 天）`;});
+}
+function mDeal(id,tId){
+  const L=LBY[id];const O=L.orderId?OBY[L.orderId]:null;
+  const pushed=O?O.pushes.map(p=>TBY[p.teacherId]):[];
+  const near=teachers.filter(t=>t.city===L.city&&!pushed.includes(t)).sort((a,b)=>dist(a,L)-dist(b,L)).slice(0,8);
+  const students=[...new Set([L.child.name,...L.dealIds.map(d=>DBY[d].student)])];
+  const op='op'+Date.now();
+  openModal(`<form class="form"><h2>录成交 · ${h(L.parent)}</h2>
+    <div class="fld"><label for="d-stu">学生</label><select id="d-stu" name="student">${students.map(s=>`<option>${h(s)}</option>`).join('')}<option value="__new">＋ 这位家长的另一个孩子</option></select></div>
+    <div class="fld" id="d-newbox" hidden><label for="d-new">新学生姓名</label><input id="d-new" name="newStudent" type="text"></div>
+    <div class="fld"><label for="d-t">老师</label><select id="d-t" name="teacher"><option value="">请选择</option>
+      ${pushed.length?`<optgroup label="已推送的老师">${pushed.map(t=>`<option value="${t.id}" ${t.id===tId?'selected':''}>${h(t.name)}</option>`).join('')}</optgroup>`:''}
+      <optgroup label="附近老师">${near.map(t=>`<option value="${t.id}" ${t.id===tId?'selected':''}>${h(t.name)} · ${dist(t,L).toFixed(1)} km</option>`).join('')}</optgroup></select></div>
+    <div class="two"><div class="fld"><label for="d-fee">信息费（元）</label><input id="d-fee" name="fee" type="text" inputmode="decimal" placeholder="例如 300"></div>
+    <div class="fld"><label for="d-date">成交日期</label><input id="d-date" name="date" type="date" value="${TODAY}" max="${TODAY}"></div></div>
+    <p class="hint">学生从这位家长名下选择，不会按同名自动匹配到别人家的孩子。同一次提交只会记一笔。</p>${foot('确认成交')}</form>`,
+  f=>{
+    if(S.ops[op])return;
+    let stu=fv(f,'student');if(stu==='__new'){stu=fv(f,'newStudent');if(!stu)return setErr(f,'请填写新学生的姓名。')}
+    const t=fv(f,'teacher');if(!t)return setErr(f,'请选择上课的老师。');
+    const fee=fv(f,'fee');if(!/^\d+(\.\d{1,2})?$/.test(fee)||+fee<=0)return setErr(f,'信息费要填大于 0 的金额，最多两位小数。');
+    const date=fv(f,'date');if(!date||date>TODAY)return setErr(f,'成交日期不能晚于今天。');
+    S.ops[op]=1;
+    makeDeal(L,date,{fee:+fee,teacherId:t,student:stu,by:me().id,text:`录入成交，信息费 ${yuan(+fee)}`});
+    if(O)O.dealId=DBY['D'+did].id;
+    closeModal();toast(`已录入成交 ${yuan(+fee)}，这位客户的跟进任务已停止`);render();
+  },
+  f=>{f.querySelector('#d-newbox').hidden=fv(f,'student')!=='__new'});
+}
+function mRefund(id){
+  const L=LBY[id];const ds=L.dealIds.map(x=>DBY[x]).filter(d=>!d.refund);
+  if(!ds.length)return toast('这位客户没有可以退费的成交');
+  openModal(`<form class="form"><h2>办退费 · ${h(L.parent)}</h2>
+    <div class="fld"><label for="r-d">对应的成交</label><select id="r-d" name="deal">${ds.map(d=>`<option value="${d.id}">${md(d.date)} · ${h(d.student)} · 信息费 ${yuan(d.fee)}</option>`).join('')}</select></div>
+    <div class="two"><div class="fld"><label for="r-a">退费金额（元）</label><input id="r-a" name="amount" type="text" inputmode="decimal"></div>
+    <div class="fld"><label for="r-dt">退费日期</label><input id="r-dt" name="date" type="date" value="${TODAY}" max="${TODAY}"></div></div>
+    <div class="fld"><label for="r-r">退费原因</label><select id="r-r" name="reason">${Object.keys(REASONS).map(r=>`<option>${r}</option>`).join('')}</select></div>
+    <p class="hint" id="r-h"></p>${foot('确认退费')}</form>`,
+  f=>{
+    const d=DBY[fv(f,'deal')];const a=fv(f,'amount');const dt=fv(f,'date');
+    if(!/^\d+(\.\d{1,2})?$/.test(a)||+a<=0)return setErr(f,'退费金额要大于 0，最多两位小数。');
+    if(+a>d.fee)return setErr(f,`退费金额不能超过这笔成交的信息费 ${yuan(d.fee)}。`);
+    if(!dt||dt<d.date)return setErr(f,`退费日期不能早于成交日期 ${md(d.date)}。`);
+    if(dt>TODAY)return setErr(f,'退费日期不能晚于今天。');
+    d.refund={date:dt,amount:+a,reason:fv(f,'reason')};L.status='已退费';L.nextDue=null;
+    L.followups.push({date:dt,status:'已退费',by:me().id,text:`办理退费 ${yuan(+a)}：${d.refund.reason}`});
+    closeModal();toast(`已办理退费 ${yuan(+a)}，计入 ${md(dt)} 所在月份`);render();
+  },
+  f=>{const d=DBY[fv(f,'deal')];f.querySelector('#r-h').textContent=`最多可退 ${yuan(d.fee)}；退费算在退费发生的月份，不改成交月的营收。`});
+}
+function mVisit(did0,k){
+  const d=DBY[did0];const L=LBY[d.leadId];
+  openModal(`<form class="form"><h2>回访 · ${h(L.parent)}</h2><p class="hint">学生 ${h(d.student)} · 老师 ${h(TBY[d.teacherId].name)} · 成交于 ${md(d.date)}</p>
+    <div class="fld"><label for="v-r">家长反馈</label><select id="v-r" name="r"><option>满意</option><option>一般</option><option>不满意</option></select></div>
+    <div class="fld"><label for="v-t">回访记录</label><textarea id="v-t" name="t" placeholder="例如：孩子喜欢老师，家长想加一节数学"></textarea></div>${foot('完成回访')}</form>`,
+  f=>{const r=fv(f,'r');d[k]=true;L.followups.push({date:TODAY,status:'回访',by:me().id,text:`回访（${r}）${fv(f,'t')?'：'+fv(f,'t'):''}`});
+    closeModal();toast(r==='不满意'?'已记录。家长不满意，建议今天就联系老师调整，避免退费':'回访已完成');render()});
+}
+function mNewLead(){
+  const cities=scopeCities();
+  openModal(`<form class="form"><h2>新建客户</h2>
+    <div class="two"><div class="fld"><label for="n-p">家长称呼</label><input id="n-p" name="parent" type="text" placeholder="例如 陈女士"></div>
+    <div class="fld"><label for="n-ph">手机号</label><input id="n-ph" name="phone" type="tel" inputmode="numeric" placeholder="11 位手机号"></div></div>
+    <div class="two"><div class="fld"><label for="n-c">城市</label><select id="n-c" name="city">${cities.map(c=>`<option>${c}</option>`).join('')}</select></div>
+    <div class="fld"><label for="n-d">区域</label><select id="n-d" name="district"></select></div></div>
+    <div class="fld"><label for="n-a">小区 / 详细地址</label><input id="n-a" name="addr" type="text" placeholder="例如 翠湖花园 3 栋"></div>
+    <div class="two"><div class="fld"><label for="n-g">孩子年级</label><select id="n-g" name="grade">${GRADES.map(g=>`<option>${g}</option>`).join('')}</select></div>
+    <div class="fld"><label for="n-s">科目</label><select id="n-s" name="subject">${SUBJ.map(s=>`<option>${s}</option>`).join('')}</select></div></div>
+    <div class="fld"><label for="n-ch">来源渠道</label><select id="n-ch" name="channel"><option value="">请选择（必填）</option>${CHANNELS.map(c=>`<option>${c}</option>`).join('')}</select></div>
+    <p class="hint">手机号相同的客户系统会拦下，不会重复录入。演示可以试试已有号码：${mask(leads[5].phone)} 对应的完整号码 ${leads[5].phone}</p>${foot('保存客户')}</form>`,
+  f=>{
+    const p=fv(f,'parent'),ph=fv(f,'phone'),ch=fv(f,'channel');
+    if(!p)return setErr(f,'请填写家长称呼。');
+    if(!/^1\d{10}$/.test(ph))return setErr(f,'手机号要是 11 位数字。');
+    const dup=leads.find(l=>l.phone===ph);
+    if(dup)return setErr(f,`这个号码已经是客户（${dup.city}，负责人 ${SBY[dup.owner].name}），不能重复录入。如需接手请找主管转交。`);
+    if(!ch)return setErr(f,'请选择来源渠道，渠道统计依赖这一项。');
+    const city=fv(f,'city');const pl=place(city,fv(f,'district'));const sur=p[0];
+    const L={id:'L'+(++lid),date:TODAY,city,channel:ch,owner:me().id,...pl,parent:p,phone:ph,child:{name:sur+'同学',grade:fv(f,'grade')},subject:fv(f,'subject'),
+      address:pl.district+(fv(f,'addr')||''),followups:[],status:'新线索',reached:0,lastFollow:null,nextDue:null,dealIds:[],orderId:null};
+    leads.push(L);LBY[L.id]=L;usedPhones.add(ph);closeModal();toast('已新建客户，已出现在今日待办的新线索里');go('cust',L.id);
+  },
+  f=>{const c=fv(f,'city');const sel=f.querySelector('#n-d');if(sel.dataset.c!==c){sel.dataset.c=c;sel.innerHTML=DISTRICTS[c].map(d=>`<option>${d[0]}</option>`).join('')}});
+}
+function mNewTeacher(){
+  const cities=scopeCities();
+  openModal(`<form class="form"><h2>录入老师</h2>
+    <div class="two"><div class="fld"><label for="t-n">姓名</label><input id="t-n" name="name" type="text"></div>
+    <div class="fld"><label for="t-p">手机号</label><input id="t-p" name="phone" type="tel" inputmode="numeric"></div></div>
+    <div class="two"><div class="fld"><label for="t-c">城市</label><select id="t-c" name="city">${cities.map(c=>`<option>${c}</option>`).join('')}</select></div>
+    <div class="fld"><label for="t-ty">老师类型</label><select id="t-ty" name="type"><option value="">请选择</option><option>在校大学生</option><option>专职教师</option><option>在职教师</option></select></div></div>
+    <div class="fld"><span class="lb">科目</span><div class="checks">${SUBJ.slice(0,5).map(s=>`<label><input type="checkbox" name="subj" value="${s}">${s}</label>`).join('')}</div></div>
+    <div class="fld"><span class="lb">学段</span><div class="checks">${LEVELS.map(s=>`<label><input type="checkbox" name="lv" value="${s}">${s}</label>`).join('')}</div></div>
+    <div class="fld"><label for="t-a">详细地址</label><input id="t-a" name="addr" type="text" placeholder="小区或学校，不能只写城市"></div>
+    <div class="note" id="t-c5"></div>${foot('保存老师')}</form>`,
+  f=>{
+    const n=fv(f,'name'),ph=fv(f,'phone');
+    if(!n)return setErr(f,'请填写老师姓名。');
+    if(!/^1\d{10}$/.test(ph))return setErr(f,'手机号要是 11 位数字。');
+    const dup=teachers.find(t=>t.phone===ph);if(dup)return setErr(f,`这个手机号已经录过：${dup.name}（${dup.city}）。`);
+    const subj=[...f.querySelectorAll('input[name=subj]:checked')].map(x=>x.value);const lv=[...f.querySelectorAll('input[name=lv]:checked')].map(x=>x.value);
+    const ty=fv(f,'type'),addr=fv(f,'addr');
+    const t=makeTeacher(fv(f,'city'),{name:n,phone:ph,type:ty||'在校大学生',hasType:!!ty,subjects:subj,levels:lv,hasAddress:!!addr,address:addr||'',status:'可接单',entered:TODAY,by:me().id});
+    usedPhones.add(ph);closeModal();toast('老师已录入，资料完整度 '+completeness(t).filter(x=>x[1]).length+'/5');go('teacher',t.id);
+  },
+  f=>{const items=[['联系方式',/^1\d{10}$/.test(fv(f,'phone'))],['详细地址',!!fv(f,'addr')],['年级',!!f.querySelector('input[name=lv]:checked')],['科目',!!f.querySelector('input[name=subj]:checked')],['老师类型',!!fv(f,'type')]];
+    const c=items.filter(x=>x[1]).length;f.querySelector('#t-c5').textContent=`资料完整度 ${c}/5`+(c<5?'，还缺：'+items.filter(x=>!x[1]).map(x=>x[0]).join('、'):'，可以派单');});
+}
+
+/* ================= 推送 ================= */
+function doPush(o,leadId,tId){
+  let O=o?OBY[o]:null;
+  if(!O){const L=LBY[leadId];O=L.orderId?OBY[L.orderId]:makeOrder(L)}
+  if(O.pushes.some(p=>p.teacherId===tId))return;
+  O.pushes.push({teacherId:tId,status:'已推送',date:TODAY});
+  toast(`已推送给 ${TBY[tId].name}，记录已保存`);render();
+}
+
+/* ================= 路由与渲染 ================= */
+function go(page,id){S.hist.push([S.page,S.id]);S.page=page;S.id=id||null;S.mapSel=page==='map'?S.mapSel:S.mapSel;render();window.scrollTo(0,0)}
+function navHtml(){
+  const t=tasks();const n=t.fresh.length+t.due.length+t.visits.length;
+  const cur=['cust'].includes(S.page)?'customers':S.page==='order'?'orders':S.page==='teacher'?'teachers':S.page;
+  return NAV[S.uk].map(([k,l])=>`<button class="nv" data-act="nav" data-id="${k}" ${cur===k?'aria-current="page"':''}><span>${l}</span>${k==='todo'&&n?`<span class="bd">${n}</span>`:''}</button>`).join('');
+}
+function pageHtml(){
+  const P={todo:pageTodo,customers:pageCustomers,cust:pageCust,orders:pageOrders,order:pageOrder,teachers:pageTeachers,teacher:pageTeacher,map:pageMap,
+    analytics:pageAnalytics,team:pageTeam,staffdata:pageStaffData,mine:pageMine,accounts:pageAccounts};
+  const f=P[S.page]||pageTodo;
+  return `<div class="demo-strip">${chip('演示版','blue')}<span>当前身份：${h(DEMO[S.uk].label)} · 数据为虚构</span></div>`+f();
+}
+function render(){
+  if(typeof document==='undefined')return;
+  const ae=document.activeElement;const fid=ae&&ae.id&&ae.closest&&ae.closest('#main')?ae.id:null;let ss=null;try{ss=ae.selectionStart}catch(e){}
+  document.getElementById('nav').innerHTML=navHtml();
+  document.getElementById('main').innerHTML=`<div class="wrap">${pageHtml()}</div>`;
+  if(fid){const el=document.getElementById(fid);if(el){el.focus();try{if(ss!=null)el.setSelectionRange(ss,ss)}catch(e){}}}
+}
+function switchRole(k){
+  S.uk=k;S.page=NAV[k][0][0];S.id=null;S.hist=[];S.city='全部';S.person='';S.qOwner='';S.qCity='';S.mapSel=null;S.staffSel='';S.mapCity='';
+  render();
+}
+if(typeof document!=='undefined'){
+  const rs=document.getElementById('role');
+  rs.innerHTML=Object.entries(DEMO).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('');
+  rs.addEventListener('change',()=>switchRole(rs.value));
+  document.addEventListener('click',e=>{
+    const a=e.target.closest('[data-act]');if(!a)return;
+    if(a.closest('#modal')&&a.dataset.act!=='close')return;
+    const act=a.dataset.act,id=a.dataset.id;
+    e.stopPropagation();
+    switch(act){
+      case 'nav':S.hist=[];S.page=id;S.id=null;S.staffSel='';render();window.scrollTo(0,0);break;
+      case 'cust':go('cust',id);break;
+      case 'order':go('order',id);break;
+      case 'teacher':go('teacher',id);break;
+      case 'back':{const p=S.hist.pop();if(p){S.page=p[0];S.id=p[1]}else{S.page=NAV[S.uk][0][0];S.id=null}render();break}
+      case 'follow':mFollow(id);break;
+      case 'deal':mDeal(id,a.dataset.t);break;
+      case 'refund':mRefund(id);break;
+      case 'visit':mVisit(id,a.dataset.k);break;
+      case 'newlead':mNewLead();break;
+      case 'newteacher':mNewTeacher();break;
+      case 'toorder':{const L=LBY[id];const O=L.orderId?OBY[L.orderId]:makeOrder(L);if(!L.orderId)L.orderId=O.id;toast('已生成派单需求，按匹配度推荐老师');go('order',O.id);break}
+      case 'push':doPush(a.dataset.o,a.dataset.lead,a.dataset.t);break;
+      case 'pstat':{const O=OBY[id];const p=O.pushes[+a.dataset.i];p.status=a.dataset.s;p.date=TODAY;toast(`${TBY[p.teacherId].name}：${p.status}`);render();if(p.status==='试课成功')mDeal(O.leadId,p.teacherId);break}
+      case 'tab':S.tab=id;if(S.page!=='analytics')S.page='analytics';render();break;
+      case 'chview':S.chView=id;render();break;
+      case 'mapsel':S.mapSel=[a.dataset.ty,id];render();break;
+      case 'staffsel':S.staffSel=id;render();break;
+      case 'acct':{const s=SBY[id];s.active=!s.active;toast(s.active?s.name+' 已启用':s.name+' 已停用，无法再登录');render();break}
+      case 'close':closeModal();break;
+      case 'reset':genAll();STAFF.forEach(s=>s.active=true);switchRole(S.uk);toast('演示数据已重置');break;
+    }
+  });
+  document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.getElementById('modal').hidden)closeModal()});
+  document.addEventListener('submit',e=>{e.preventDefault();if(modalSubmit)modalSubmit(e.target)});
+  document.addEventListener('input',e=>{
+    const t=e.target;
+    if(t.closest('#modal')){if(modalLive)modalLive(t.closest('form'));return}
+    if(t.dataset.bind&&t.type==='search'){S[t.dataset.bind]=t.value;render()}
+  });
+  document.addEventListener('change',e=>{
+    const t=e.target;
+    if(t.closest('#modal')){if(modalLive)modalLive(t.closest('form'));return}
+    if(t.dataset.layer){S.layers[t.dataset.layer]=t.checked;render();return}
+    if(t.dataset.bind&&t.type!=='search'){S[t.dataset.bind]=t.value;if(t.dataset.bind==='city')S.person='';render()}
+  });
+  render();
+}
+</script>
